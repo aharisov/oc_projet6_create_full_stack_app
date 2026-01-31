@@ -7,7 +7,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.openclassrooms.mddapi.dto.MessageResponse;
+import com.openclassrooms.mddapi.payload.response.MessageResponse;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -20,6 +20,12 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(ConflictException.class)
 	public ResponseEntity<MessageResponse> handleConflict(ConflictException ex) {
 		return ResponseEntity.status(HttpStatus.CONFLICT)
+			.body(new MessageResponse(ex.getMessage()));
+	}
+
+	@ExceptionHandler(UnauthorizedException.class)
+	public ResponseEntity<MessageResponse> handleUnauthorized(UnauthorizedException ex) {
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
 			.body(new MessageResponse(ex.getMessage()));
 	}
 
