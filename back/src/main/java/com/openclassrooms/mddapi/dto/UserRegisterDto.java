@@ -6,17 +6,20 @@ import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.Pattern;
 
 public class UserRegisterDto {
-    @NotBlank
-    @Email
+    @NotBlank(message = "Email is required")
+    @Email(message = "Email is invalid")
+    @Size(max = 50, message = "Max email length is 50 characters.")
     private String email;
-    @NotBlank
-    @Size(min = 3, max = 50)
+
+    @NotBlank(message = "Username is required")
+    @Size(min = 3, max = 30, message = "Username length must be between 3 and 30 characters.")
     private String username;
-    @NotBlank
-    @Size(min = 8)
+    
+    @NotBlank(message = "Password is required")
+    @Size(min = 8, message = "Min password length is 8 characters.")
     @Pattern(
         regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).+$",
-        message = "Le mot de passe doit contenir minuscule, majuscule, chiffre et caractère spécial."
+        message = "The password must contain lowercase letters, uppercase letters, numbers, and special characters."
     )
     private String password;
 
