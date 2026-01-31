@@ -2,9 +2,10 @@ package com.openclassrooms.mddapi.service;
 
 import com.openclassrooms.mddapi.payload.request.LoginRequest;
 import com.openclassrooms.mddapi.payload.request.SignupRequest;
-import com.openclassrooms.mddapi.payload.response.AuthResponse;
+import com.openclassrooms.mddapi.security.AuthTokens;
 
 public interface IAuthService {
     Boolean register(SignupRequest request);
-    AuthResponse login(LoginRequest request);
+    AuthTokens login(LoginRequest request);
+	AuthTokens refresh(String refreshToken);
 }

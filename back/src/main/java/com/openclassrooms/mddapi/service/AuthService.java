@@ -11,8 +11,8 @@ import com.openclassrooms.mddapi.exception.UnauthorizedException;
 import com.openclassrooms.mddapi.model.User;
 import com.openclassrooms.mddapi.payload.request.LoginRequest;
 import com.openclassrooms.mddapi.payload.request.SignupRequest;
-import com.openclassrooms.mddapi.payload.response.AuthResponse;
 import com.openclassrooms.mddapi.repository.UserRepository;
+import com.openclassrooms.mddapi.security.AuthTokens;
 import com.openclassrooms.mddapi.security.JwtService;
 
 @Service
@@ -65,7 +65,7 @@ public class AuthService implements IAuthService {
     }
 
     @Override
-	public AuthResponse login(LoginRequest request) {
+	public AuthTokens login(LoginRequest request) {
 		String identifier = request.getIdentifier() != null ? request.getIdentifier().trim() : null;
 		String password = request.getPassword();
 
@@ -82,10 +82,39 @@ public class AuthService implements IAuthService {
 		}
 
 		String accessToken = jwtService.generateAccessToken(user);
-		return new AuthResponse(
+		String refreshToken = jwtService.generateRefreshToken(user);
+		return new AuthTokens(
 			accessToken,
-			"Bearer",
-			jwtService.getAccessTokenExpirationMs() / 1000
+			refreshToken,
+			jwtService.getAccessTokenExpirationMs(),
+			jwtService.getRefreshTokenExpirationMs()
+		);
+	}
+
+	@Override
+	public AuthTokens refresh(String refreshToken) {
+		if (refreshToken == null || refreshToken.isBlank()) {
+			throw new BadRequestException("Refresh token is required");
+		}
+		if (!jwtService.isTokenValid(refreshToken)) {
+			throw new UnauthorizedException("Invalid refresh token");
+		}
+		String tokenType = jwtService.getTokenType(refreshToken);
+		if (!"refresh".equals(tokenType)) {
+			throw new UnauthorizedException("Invalid refresh token");
+		}
+		String subject = jwtService.getSubject(refreshToken);
+		Long userId = Long.valueOf(subject);
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new UnauthorizedException("Invalid refresh token"));
+
+		String accessToken = jwtService.generateAccessToken(user);
+		String newRefreshToken = jwtService.generateRefreshToken(user);
+		return new AuthTokens(
+			accessToken,
+			newRefreshToken,
+			jwtService.getAccessTokenExpirationMs(),
+			jwtService.getRefreshTokenExpirationMs()
 		);
 	}
 
