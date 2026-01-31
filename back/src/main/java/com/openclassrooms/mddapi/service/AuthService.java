@@ -1,6 +1,13 @@
 package com.openclassrooms.mddapi.service;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
+
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,19 +18,25 @@ import com.openclassrooms.mddapi.exception.UnauthorizedException;
 import com.openclassrooms.mddapi.model.User;
 import com.openclassrooms.mddapi.payload.request.LoginRequest;
 import com.openclassrooms.mddapi.payload.request.SignupRequest;
-import com.openclassrooms.mddapi.payload.response.AuthResponse;
 import com.openclassrooms.mddapi.repository.UserRepository;
+import com.openclassrooms.mddapi.model.RefreshToken;
+import com.openclassrooms.mddapi.repository.RefreshTokenRepository;
+import com.openclassrooms.mddapi.security.AuthTokens;
 import com.openclassrooms.mddapi.security.JwtService;
 
 @Service
 public class AuthService implements IAuthService {
+	private static final Logger log = LoggerFactory.getLogger(AuthService.class);
+
 	private final UserRepository userRepository;
+	private final RefreshTokenRepository refreshTokenRepository;
 	private final ModelMapper mapper;
 	private final PasswordEncoder passwordEncoder;
 	private final JwtService jwtService;
 
-	public AuthService(UserRepository userRepository, ModelMapper mapper, PasswordEncoder passwordEncoder, JwtService jwtService) {
+	public AuthService(UserRepository userRepository, RefreshTokenRepository refreshTokenRepository, ModelMapper mapper, PasswordEncoder passwordEncoder, JwtService jwtService) {
 		this.userRepository = userRepository;
+		this.refreshTokenRepository = refreshTokenRepository;
 		this.mapper = mapper;
 		this.passwordEncoder = passwordEncoder;
 		this.jwtService = jwtService;
@@ -46,9 +59,11 @@ public class AuthService implements IAuthService {
 		}
 
 		if (userRepository.existsByEmail(email)) {
+			log.warn("Registration blocked: email already in use");
 			throw new ConflictException("Email already in use");
 		}
 		if (userRepository.existsByUsername(username)) {
+			log.warn("Registration blocked: username already in use");
 			throw new ConflictException("Username already in use");
 		}
 
@@ -60,12 +75,13 @@ public class AuthService implements IAuthService {
 		userInfo.setPasswordHash(encodedPassword);
 
         userRepository.save(userInfo);
+		log.info("User registered: id={}", userInfo.getId());
 
 		return true;
     }
 
     @Override
-	public AuthResponse login(LoginRequest request) {
+	public AuthTokens login(LoginRequest request) {
 		String identifier = request.getIdentifier() != null ? request.getIdentifier().trim() : null;
 		String password = request.getPassword();
 
@@ -78,14 +94,63 @@ public class AuthService implements IAuthService {
 
 		User user = resolveUser(identifier);
 		if (!passwordEncoder.matches(password, user.getPasswordHash())) {
+			log.warn("Login failed: invalid credentials");
 			throw new UnauthorizedException("Invalid credentials");
 		}
 
 		String accessToken = jwtService.generateAccessToken(user);
-		return new AuthResponse(
+		String refreshToken = jwtService.generateRefreshToken(user);
+		saveRefreshToken(user, refreshToken);
+		log.info("Login success: userId={}", user.getId());
+		return new AuthTokens(
 			accessToken,
-			"Bearer",
-			jwtService.getAccessTokenExpirationMs() / 1000
+			refreshToken,
+			jwtService.getAccessTokenExpirationMs(),
+			jwtService.getRefreshTokenExpirationMs()
+		);
+	}
+
+	@Override
+	public AuthTokens refresh(String refreshToken) {
+		if (refreshToken == null || refreshToken.isBlank()) {
+			throw new BadRequestException("Refresh token is required");
+		}
+		if (!jwtService.isTokenValid(refreshToken)) {
+			log.warn("Refresh failed: token invalid");
+			throw new UnauthorizedException("Invalid refresh token");
+		}
+		String tokenType = jwtService.getTokenType(refreshToken);
+		if (!"refresh".equals(tokenType)) {
+			log.warn("Refresh failed: wrong token type");
+			throw new UnauthorizedException("Invalid refresh token");
+		}
+		String subject = jwtService.getSubject(refreshToken);
+		Long userId = Long.valueOf(subject);
+
+		RefreshToken storedRefreshToken = refreshTokenRepository.findByUserId(userId)
+			.orElseThrow(() -> new UnauthorizedException("Invalid refresh token"));
+		
+		if (storedRefreshToken.isRevoked() || storedRefreshToken.getExpiresAt().isBefore(Instant.now())) {
+			log.warn("Refresh failed: token revoked or expired");
+			throw new UnauthorizedException("Invalid refresh token");
+		}
+		
+		if (!hashToken(refreshToken).equals(storedRefreshToken.getTokenHash())) {
+			log.warn("Refresh failed: token hash mismatch");
+			throw new UnauthorizedException("Invalid refresh token");
+		}
+
+		User user = storedRefreshToken.getUser();
+
+		String accessToken = jwtService.generateAccessToken(user);
+		String newRefreshToken = jwtService.generateRefreshToken(user);
+		saveRefreshToken(user, newRefreshToken);
+		log.info("Refresh success: userId={}", user.getId());
+		return new AuthTokens(
+			accessToken,
+			newRefreshToken,
+			jwtService.getAccessTokenExpirationMs(),
+			jwtService.getRefreshTokenExpirationMs()
 		);
 	}
 
@@ -98,5 +163,29 @@ public class AuthService implements IAuthService {
 		return userRepository.findByUsername(identifier)
 			.orElseGet(() -> userRepository.findByEmail(normalized)
 				.orElseThrow(() -> new UnauthorizedException("Invalid credentials")));
+	}
+
+	private void saveRefreshToken(User user, String refreshToken) {
+		RefreshToken storedRefreshToken = refreshTokenRepository.findByUserId(user.getId())
+			.orElseGet(RefreshToken::new);
+		storedRefreshToken.setUser(user);
+		storedRefreshToken.setTokenHash(hashToken(refreshToken));
+		storedRefreshToken.setExpiresAt(Instant.now().plusMillis(jwtService.getRefreshTokenExpirationMs()));
+		storedRefreshToken.setRevoked(false);
+		refreshTokenRepository.save(storedRefreshToken);
+	}
+
+	private String hashToken(String token) {
+		try {
+			MessageDigest digest = MessageDigest.getInstance("SHA-256");
+			byte[] hash = digest.digest(token.getBytes(StandardCharsets.UTF_8));
+			StringBuilder hex = new StringBuilder(hash.length * 2);
+			for (byte b : hash) {
+				hex.append(String.format("%02x", b));
+			}
+			return hex.toString();
+		} catch (NoSuchAlgorithmException ex) {
+			throw new IllegalStateException("SHA-256 not available", ex);
+		}
 	}
 }

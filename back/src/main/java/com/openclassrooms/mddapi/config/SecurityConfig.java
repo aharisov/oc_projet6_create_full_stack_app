@@ -7,12 +7,15 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.openclassrooms.mddapi.security.JwtAuthenticationFilter;
 
 @Configuration
 public class SecurityConfig {
 
 	@Bean
-    SecurityFilterChain filterChain(HttpSecurity http) throws Exception { 
+    SecurityFilterChain filterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception { 
         return http
 			.csrf(csrf -> csrf.disable())
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -20,6 +23,7 @@ public class SecurityConfig {
 				.requestMatchers("/auth/**").permitAll() 
 				.anyRequest().authenticated()
 			)
+			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 			.build();       
     }
 
