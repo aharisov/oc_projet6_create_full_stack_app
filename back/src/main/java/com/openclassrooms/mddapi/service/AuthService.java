@@ -5,7 +5,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.openclassrooms.mddapi.dto.UserRegisterDto;
+import com.openclassrooms.mddapi.payload.request.SignupRequest;
 import com.openclassrooms.mddapi.exception.BadRequestException;
 import com.openclassrooms.mddapi.exception.ConflictException;
 import com.openclassrooms.mddapi.model.User;
@@ -25,9 +25,9 @@ public class AuthService implements IAuthService {
 
 	@Override
     @Transactional
-    public Boolean register(UserRegisterDto user) {
-		String email = user.getEmail() != null ? user.getEmail().trim().toLowerCase() : null;
-		String username = user.getUsername() != null ? user.getUsername().trim() : null;
+    public Boolean register(SignupRequest request) {
+		String email = request.getEmail() != null ? request.getEmail().trim().toLowerCase() : null;
+		String username = request.getUsername() != null ? request.getUsername().trim() : null;
 
 		if (email == null || email.isBlank()) {
 			throw new BadRequestException("Email is required");
@@ -35,7 +35,7 @@ public class AuthService implements IAuthService {
 		if (username == null || username.isBlank()) {
 			throw new BadRequestException("Username is required");
 		}
-		if (user.getPassword() == null || user.getPassword().isBlank()) {
+		if (request.getPassword() == null || request.getPassword().isBlank()) {
 			throw new BadRequestException("Password is required");
 		}
 
@@ -46,9 +46,9 @@ public class AuthService implements IAuthService {
 			throw new ConflictException("Username already in use");
 		}
 
-		String encodedPassword = passwordEncoder.encode(user.getPassword());
+		String encodedPassword = passwordEncoder.encode(request.getPassword());
 
-		User userInfo = mapper.map(user, User.class);
+		User userInfo = mapper.map(request, User.class);
 		userInfo.setEmail(email);
 		userInfo.setUsername(username);
 		userInfo.setPasswordHash(encodedPassword);

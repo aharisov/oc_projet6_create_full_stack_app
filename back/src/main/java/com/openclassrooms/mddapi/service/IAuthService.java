@@ -1,7 +1,7 @@
 package com.openclassrooms.mddapi.service;
 
-import com.openclassrooms.mddapi.dto.UserRegisterDto;
+import com.openclassrooms.mddapi.payload.request.SignupRequest;
 
 public interface IAuthService {
-    Boolean register(UserRegisterDto user);
+    Boolean register(SignupRequest request);
 }
