@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.openclassrooms.mddapi.dto.UserRegisterDto;
+import com.openclassrooms.mddapi.exception.BadRequestException;
+import com.openclassrooms.mddapi.exception.ConflictException;
 import com.openclassrooms.mddapi.model.User;
 import com.openclassrooms.mddapi.repository.UserRepository;
 
@@ -21,22 +23,29 @@ public class AuthService implements IAuthService {
 		this.passwordEncoder = passwordEncoder;
 	}
 
-    @Override
+	@Override
     @Transactional
     public Boolean register(UserRegisterDto user) {
 		String email = user.getEmail() != null ? user.getEmail().trim().toLowerCase() : null;
 		String username = user.getUsername() != null ? user.getUsername().trim() : null;
 
-		if (email != null && userRepository.existsByEmail(email)) {
-			throw new IllegalArgumentException("Email already in use");
+		if (email == null || email.isBlank()) {
+			throw new BadRequestException("Email is required");
 		}
-		if (username != null && userRepository.existsByUsername(username)) {
-			throw new IllegalArgumentException("Username already in use");
+		if (username == null || username.isBlank()) {
+			throw new BadRequestException("Username is required");
+		}
+		if (user.getPassword() == null || user.getPassword().isBlank()) {
+			throw new BadRequestException("Password is required");
 		}
 
-        if (user.getPassword() == null || user.getPassword().isBlank()) {
-            throw new IllegalArgumentException("Password is required");
-        }
+		if (userRepository.existsByEmail(email)) {
+			throw new ConflictException("Email already in use");
+		}
+		if (userRepository.existsByUsername(username)) {
+			throw new ConflictException("Username already in use");
+		}
+
 		String encodedPassword = passwordEncoder.encode(user.getPassword());
 
 		User userInfo = mapper.map(user, User.class);
