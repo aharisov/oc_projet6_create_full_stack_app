@@ -1,11 +1,11 @@
-package com.openclassrooms.mddapi.dto;
+package com.openclassrooms.mddapi.payload.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.Pattern;
 
-public class UserRegisterDto {
+public class SignupRequest {
     @NotBlank(message = "Email is required")
     @Email(message = "Email is invalid")
     @Size(max = 50, message = "Max email length is 50 characters.")
@@ -23,7 +23,7 @@ public class UserRegisterDto {
     )
     private String password;
 
-    public UserRegisterDto(String email, String username, String password) {
+    public SignupRequest(String email, String username, String password) {
         this.email = email;
         this.username = username;
         this.password = password;
