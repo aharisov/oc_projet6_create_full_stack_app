@@ -130,8 +130,8 @@ public class AuthService implements IAuthService {
 		RefreshToken storedRefreshToken = refreshTokenRepository.findByUserId(userId)
 			.orElseThrow(() -> new UnauthorizedException("Invalid refresh token"));
 		
-		if (storedRefreshToken.isRevoked() || storedRefreshToken.getExpiresAt().isBefore(Instant.now())) {
-			log.warn("Refresh failed: token revoked or expired");
+		if (storedRefreshToken.getExpiresAt().isBefore(Instant.now())) {
+			log.warn("Refresh failed: token expired");
 			throw new UnauthorizedException("Invalid refresh token");
 		}
 		
@@ -154,6 +154,32 @@ public class AuthService implements IAuthService {
 		);
 	}
 
+	@Override
+	public void logout(String refreshToken) {
+		if (refreshToken == null || refreshToken.isBlank()) {
+			throw new BadRequestException("Refresh token is required");
+		}
+		if (!jwtService.isTokenValid(refreshToken)) {
+			throw new UnauthorizedException("Invalid refresh token");
+		}
+		String tokenType = jwtService.getTokenType(refreshToken);
+		if (!"refresh".equals(tokenType)) {
+			throw new UnauthorizedException("Invalid refresh token");
+		}
+		String subject = jwtService.getSubject(refreshToken);
+		Long userId = Long.valueOf(subject);
+
+		RefreshToken storedRefreshToken = refreshTokenRepository.findByUserId(userId)
+			.orElseThrow(() -> new UnauthorizedException("Invalid refresh token"));
+
+		if (!hashToken(refreshToken).equals(storedRefreshToken.getTokenHash())) {
+			throw new UnauthorizedException("Invalid refresh token");
+		}
+
+		refreshTokenRepository.delete(storedRefreshToken);
+		log.info("Logout success: userId={}", userId);
+	}
+
     private User resolveUser(String identifier) {
 		String normalized = identifier.toLowerCase();
 		if (normalized.contains("@")) {
@@ -171,7 +197,7 @@ public class AuthService implements IAuthService {
 		storedRefreshToken.setUser(user);
 		storedRefreshToken.setTokenHash(hashToken(refreshToken));
 		storedRefreshToken.setExpiresAt(Instant.now().plusMillis(jwtService.getRefreshTokenExpirationMs()));
-		storedRefreshToken.setRevoked(false);
+		
 		refreshTokenRepository.save(storedRefreshToken);
 	}
 
