@@ -154,6 +154,32 @@ public class AuthService implements IAuthService {
 		);
 	}
 
+	@Override
+	public void logout(String refreshToken) {
+		if (refreshToken == null || refreshToken.isBlank()) {
+			throw new BadRequestException("Refresh token is required");
+		}
+		if (!jwtService.isTokenValid(refreshToken)) {
+			throw new UnauthorizedException("Invalid refresh token");
+		}
+		String tokenType = jwtService.getTokenType(refreshToken);
+		if (!"refresh".equals(tokenType)) {
+			throw new UnauthorizedException("Invalid refresh token");
+		}
+		String subject = jwtService.getSubject(refreshToken);
+		Long userId = Long.valueOf(subject);
+
+		RefreshToken storedRefreshToken = refreshTokenRepository.findByUserId(userId)
+			.orElseThrow(() -> new UnauthorizedException("Invalid refresh token"));
+
+		if (!hashToken(refreshToken).equals(storedRefreshToken.getTokenHash())) {
+			throw new UnauthorizedException("Invalid refresh token");
+		}
+
+		refreshTokenRepository.delete(storedRefreshToken);
+		log.info("Logout success: userId={}", userId);
+	}
+
     private User resolveUser(String identifier) {
 		String normalized = identifier.toLowerCase();
 		if (normalized.contains("@")) {
