@@ -177,6 +177,11 @@ public class AuthService implements IAuthService {
 				return new UnauthorizedException("Invalid refresh token");
 			});
 
+		if (storedRefreshToken.getExpiresAt().isBefore(Instant.now())) {
+			log.warn("Logout failed: token expired");
+			throw new UnauthorizedException("Invalid refresh token");
+		}
+
 		if (!hashToken(refreshToken).equals(storedRefreshToken.getTokenHash())) {
 			log.warn("Logout failed: token hash mismatch");
 			throw new UnauthorizedException("Invalid refresh token");
