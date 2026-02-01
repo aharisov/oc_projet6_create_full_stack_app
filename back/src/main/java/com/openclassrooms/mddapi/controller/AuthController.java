@@ -26,6 +26,8 @@ import jakarta.validation.Valid;
 public class AuthController {
     
     private final IAuthService authService;
+	private static final String COOKIE_PATH = "/api/auth";
+	private static final String COOKIE_NAME = "refresh_token";
 
     public AuthController(IAuthService authService) {
         this.authService = authService;
@@ -43,9 +45,9 @@ public class AuthController {
 	public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
 		AuthTokens tokens = authService.login(request);
 
-		ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", tokens.getRefreshToken())
+		ResponseCookie refreshCookie = ResponseCookie.from(COOKIE_NAME, tokens.getRefreshToken())
 			.httpOnly(true)
-			.path("/api/auth/refresh")
+			.path(COOKIE_PATH)
 			.maxAge(Duration.ofMillis(tokens.getRefreshTokenExpiresIn()))
 			.build();
 
@@ -61,12 +63,12 @@ public class AuthController {
 	}
 
 	@PostMapping("/refresh")
-	public ResponseEntity<AuthResponse> refresh(@CookieValue(name = "refresh_token", required = false) String refreshToken) {
+	public ResponseEntity<AuthResponse> refresh(@CookieValue(name = COOKIE_NAME, required = false) String refreshToken) {
 		AuthTokens tokens = authService.refresh(refreshToken);
 
-		ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", tokens.getRefreshToken())
+		ResponseCookie refreshCookie = ResponseCookie.from(COOKIE_NAME, tokens.getRefreshToken())
 			.httpOnly(true)
-			.path("/api/auth/refresh")
+			.path(COOKIE_PATH)
 			.maxAge(Duration.ofMillis(tokens.getRefreshTokenExpiresIn()))
 			.build();
 
@@ -79,5 +81,20 @@ public class AuthController {
 		return ResponseEntity.ok()
 			.header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
 			.body(response);
+	}
+
+	@PostMapping("/logout")
+	public ResponseEntity<MessageResponse> logout(@CookieValue(name = COOKIE_NAME, required = false) String refreshToken) {
+		authService.logout(refreshToken);
+
+		ResponseCookie refreshCookie = ResponseCookie.from(COOKIE_NAME, "")
+			.httpOnly(true)
+			.path(COOKIE_PATH)
+			.maxAge(0)
+			.build();
+
+		return ResponseEntity.ok()
+			.header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+			.body(new MessageResponse("Logged out"));
 	}
 }
