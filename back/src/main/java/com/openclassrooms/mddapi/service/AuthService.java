@@ -160,19 +160,25 @@ public class AuthService implements IAuthService {
 			throw new BadRequestException("Refresh token is required");
 		}
 		if (!jwtService.isTokenValid(refreshToken)) {
+			log.warn("Logout failed: token invalid");
 			throw new UnauthorizedException("Invalid refresh token");
 		}
 		String tokenType = jwtService.getTokenType(refreshToken);
 		if (!"refresh".equals(tokenType)) {
+			log.warn("Logout failed: wrong token type");
 			throw new UnauthorizedException("Invalid refresh token");
 		}
 		String subject = jwtService.getSubject(refreshToken);
 		Long userId = Long.valueOf(subject);
 
 		RefreshToken storedRefreshToken = refreshTokenRepository.findByUserId(userId)
-			.orElseThrow(() -> new UnauthorizedException("Invalid refresh token"));
+			.orElseThrow(() -> {
+				log.warn("Logout failed: refresh token not found");
+				return new UnauthorizedException("Invalid refresh token");
+			});
 
 		if (!hashToken(refreshToken).equals(storedRefreshToken.getTokenHash())) {
+			log.warn("Logout failed: token hash mismatch");
 			throw new UnauthorizedException("Invalid refresh token");
 		}
 
