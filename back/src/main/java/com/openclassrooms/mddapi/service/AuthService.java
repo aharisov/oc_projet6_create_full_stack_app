@@ -130,8 +130,8 @@ public class AuthService implements IAuthService {
 		RefreshToken storedRefreshToken = refreshTokenRepository.findByUserId(userId)
 			.orElseThrow(() -> new UnauthorizedException("Invalid refresh token"));
 		
-		if (storedRefreshToken.isRevoked() || storedRefreshToken.getExpiresAt().isBefore(Instant.now())) {
-			log.warn("Refresh failed: token revoked or expired");
+		if (storedRefreshToken.getExpiresAt().isBefore(Instant.now())) {
+			log.warn("Refresh failed: token expired");
 			throw new UnauthorizedException("Invalid refresh token");
 		}
 		
@@ -197,7 +197,7 @@ public class AuthService implements IAuthService {
 		storedRefreshToken.setUser(user);
 		storedRefreshToken.setTokenHash(hashToken(refreshToken));
 		storedRefreshToken.setExpiresAt(Instant.now().plusMillis(jwtService.getRefreshTokenExpirationMs()));
-		storedRefreshToken.setRevoked(false);
+		
 		refreshTokenRepository.save(storedRefreshToken);
 	}
 
