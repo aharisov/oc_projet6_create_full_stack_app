@@ -1,13 +1,83 @@
 package com.openclassrooms.mddapi.service;
 
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import com.openclassrooms.mddapi.dto.PostDto;
+import com.openclassrooms.mddapi.exception.NotFoundException;
+import com.openclassrooms.mddapi.mapper.PostMapper;
+import com.openclassrooms.mddapi.model.Post;
+import com.openclassrooms.mddapi.model.Topic;
+import com.openclassrooms.mddapi.model.User;
 import com.openclassrooms.mddapi.repository.PostRepository;
+import com.openclassrooms.mddapi.repository.TopicRepository;
 
+@Service
 public class PostService implements IPostService {
+	private static final Logger log = LoggerFactory.getLogger(PostService.class);
 
-	private PostRepository postRepository;
+	private final PostRepository postRepository;
+	private final TopicRepository topicRepository;
+	private final PostMapper postMapper;
+	private final UserService userService;
 	
-	public PostService(PostRepository postRepository) {
+	public PostService(
+		PostRepository postRepository,
+		TopicRepository topicRepository,
+		PostMapper postMapper,
+		UserService userService
+	) {
 		this.postRepository = postRepository;
+		this.topicRepository = topicRepository;
+		this.postMapper = postMapper;
+		this.userService = userService;
 	}
-	
+
+	// TODO: implement getting all posts from topics, to which user is subscribed
+	// TODO: implement comments add
+	@Override
+	public List<PostDto> getPosts(String sortOrder) {
+		if ("asc".equalsIgnoreCase(sortOrder)) {
+			return postMapper.toDto(postRepository.findAllByOrderByCreatedAtAsc());
+		}
+		return postMapper.toDto(postRepository.findAllByOrderByCreatedAtDesc());
+	}
+
+	@Override
+	public PostDto getPost(Long id) {
+		Post post = postRepository.findById(id)
+			.orElseThrow(() -> {
+				log.warn("Post with id {} not found", id);
+				return new NotFoundException("Post not found");
+			});
+
+		Long topicId = post.getTopic() != null ? post.getTopic().getId() : null;
+		Long authorId = post.getAuthor() != null ? post.getAuthor().getId() : null;
+
+		PostDto postData = postMapper.toDto(post);
+		postData.setTopicId(topicId);
+		postData.setAuthorId(authorId);
+
+		return postData;
+	}
+
+	@Override
+	public void createPost(PostDto request) {
+		User author = userService.getCurrentUser();
+		Topic topic = topicRepository.findById(request.getTopicId())
+			.orElseThrow(() -> {
+				log.warn("Topic with id {} not found", request.getTopicId());
+				return new NotFoundException("Topic not found");
+			});
+
+		Post post = postMapper.toEntity(request);
+		post.setTopic(topic);
+		post.setAuthor(author);
+		
+		Post savedPost = postRepository.save(post);
+		log.info("Post created: id={}", savedPost.getId());
+	}
 }
