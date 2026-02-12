@@ -1,5 +1,6 @@
 package com.openclassrooms.mddapi.service;
 
+import java.util.List;
 import java.util.Objects;
 
 import org.slf4j.Logger;
@@ -7,9 +8,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.openclassrooms.mddapi.dto.TopicDto;
 import com.openclassrooms.mddapi.exception.BadRequestException;
 import com.openclassrooms.mddapi.exception.ConflictException;
 import com.openclassrooms.mddapi.exception.NotFoundException;
+import com.openclassrooms.mddapi.mapper.TopicMapper;
 import com.openclassrooms.mddapi.model.Subscription;
 import com.openclassrooms.mddapi.model.Topic;
 import com.openclassrooms.mddapi.model.User;
@@ -22,15 +25,18 @@ public class TopicSubscriptionService implements ISubscriptionService {
 
 	private final TopicRepository topicRepository;
 	private final SubscriptionRepository subscriptionRepository;
+	private final TopicMapper topicMapper;
 	private final UserService userService;
 	
 	public TopicSubscriptionService(
 		TopicRepository topicRepository,
 		SubscriptionRepository subscriptionRepository,
+		TopicMapper topicMapper,
 		UserService userService
 	) {
 		this.topicRepository = topicRepository;
 		this.subscriptionRepository = subscriptionRepository;
+		this.topicMapper = topicMapper;
 		this.userService = userService;
 	}
 
@@ -59,6 +65,13 @@ public class TopicSubscriptionService implements ISubscriptionService {
 
 		subscriptionRepository.save(Objects.requireNonNull(subscription));
 		log.info("User {} subscribed to topic {}", user.getId(), topicId);
+	}
+
+	@Override
+	public List<TopicDto> getSubscribedTopics() {
+		Long userId = userService.getCurrentUser().getId();
+		
+		return topicMapper.toDto(subscriptionRepository.findSubscribedTopicsByUserId(userId));
 	}
 
 	@Override

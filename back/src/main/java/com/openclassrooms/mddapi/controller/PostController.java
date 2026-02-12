@@ -28,11 +28,11 @@ public class PostController {
 	}
 
 	@GetMapping
-	public List<PostDto> getPosts(
+	public List<PostDto> getFeed(
 		@RequestParam(name = "sort", required = false) 
 		String sort
 	) {
-		return postService.getPosts(sort);
+		return postService.getFeed(sort);
 	}
 
 	@GetMapping("/{id}")

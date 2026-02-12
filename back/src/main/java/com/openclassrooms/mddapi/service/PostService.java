@@ -1,6 +1,7 @@
 package com.openclassrooms.mddapi.service;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,20 +38,22 @@ public class PostService implements IPostService {
 		this.userService = userService;
 	}
 
-	// TODO: implement getting all posts from topics, to which user is subscribed
 	@Override
-	public List<PostDto> getPosts(String sortOrder) {
+	public List<PostDto> getFeed(String sortOrder) {
+		Long userId = userService.getCurrentUser().getId();
 		if ("asc".equalsIgnoreCase(sortOrder)) {
-			return postMapper.toDto(postRepository.findAllByOrderByCreatedAtAsc());
+			return postMapper.toDto(postRepository.findAllSubscribedByUserIdOrderByCreatedAtAsc(userId));
 		}
-		return postMapper.toDto(postRepository.findAllByOrderByCreatedAtDesc());
+
+		return postMapper.toDto(postRepository.findAllSubscribedByUserIdOrderByCreatedAtDesc(userId));
 	}
 
 	@Override
 	public PostDto getPost(Long id) {
-		Post post = postRepository.findById(id)
+		Long userId = userService.getCurrentUser().getId();
+		Post post = postRepository.findSubscribedPostByIdAndUserId(Objects.requireNonNull(id), userId)
 			.orElseThrow(() -> {
-				log.warn("Post with id {} not found", id);
+				log.warn("Post with id {} not found for user {}", id, userId);
 				return new NotFoundException("Post not found");
 			});
 
@@ -67,7 +70,7 @@ public class PostService implements IPostService {
 	@Override
 	public void createPost(PostDto request) {
 		User author = userService.getCurrentUser();
-		Topic topic = topicRepository.findById(request.getTopicId())
+		Topic topic = topicRepository.findById(Objects.requireNonNull(request.getTopicId()))
 			.orElseThrow(() -> {
 				log.warn("Topic with id {} not found", request.getTopicId());
 				return new NotFoundException("Topic not found");
