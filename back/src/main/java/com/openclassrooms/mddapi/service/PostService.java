@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.openclassrooms.mddapi.dto.PostDto;
+import com.openclassrooms.mddapi.exception.BadRequestException;
 import com.openclassrooms.mddapi.exception.NotFoundException;
 import com.openclassrooms.mddapi.mapper.PostMapper;
 import com.openclassrooms.mddapi.model.Post;
@@ -37,7 +38,6 @@ public class PostService implements IPostService {
 	}
 
 	// TODO: implement getting all posts from topics, to which user is subscribed
-	// TODO: implement comments add
 	@Override
 	public List<PostDto> getPosts(String sortOrder) {
 		if ("asc".equalsIgnoreCase(sortOrder)) {
@@ -79,5 +79,20 @@ public class PostService implements IPostService {
 		
 		Post savedPost = postRepository.save(post);
 		log.info("Post created: id={}", savedPost.getId());
+	}
+
+	@Override
+	public Boolean isPostExists(Long postId) {
+		if (postId == null) {
+			throw new BadRequestException("Post id is required");
+		}
+
+		postRepository.findById(postId)
+			.orElseThrow(() -> {
+				log.warn("Post with id {} not found", postId);
+				return new NotFoundException("Post not found");
+			});
+
+		return true;
 	}
 }

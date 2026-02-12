@@ -8,5 +8,5 @@ public interface IPostService {
 	List<PostDto> getPosts(String sortOrder);
 	PostDto getPost(Long id);
 	void createPost(PostDto request);
-	// TODO: addComment()
+	Boolean isPostExists(Long id);
 }
