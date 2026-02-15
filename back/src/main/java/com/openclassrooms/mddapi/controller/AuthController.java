@@ -19,10 +19,17 @@ import com.openclassrooms.mddapi.payload.response.MessageResponse;
 import com.openclassrooms.mddapi.security.AuthTokens;
 import com.openclassrooms.mddapi.service.IAuthService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/auth")
+@Tag(name = "Authentication", description = "Register, login, refresh and logout endpoints")
 public class AuthController {
     
     private final IAuthService authService;
@@ -34,6 +41,16 @@ public class AuthController {
     }
 
     @PostMapping("/register")
+	@Operation(summary = "Register user", description = "Creates a new user account")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "201", description = "User registered"),
+		@ApiResponse(responseCode = "400", description = "Invalid request data",
+			content = @Content(schema = @Schema(implementation = MessageResponse.class))),
+		@ApiResponse(responseCode = "409", description = "Email or username already exists",
+			content = @Content(schema = @Schema(implementation = MessageResponse.class))),
+		@ApiResponse(responseCode = "500", description = "Unexpected error",
+			content = @Content(schema = @Schema(implementation = MessageResponse.class)))
+	})
     public ResponseEntity<MessageResponse> registerUser(@Valid @RequestBody SignupRequest request) {
         authService.register(request);
 		
@@ -42,6 +59,16 @@ public class AuthController {
     }
 
 	@PostMapping("/login")
+	@Operation(summary = "Login user", description = "Authenticates user and returns access token with refresh cookie")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "Login successful"),
+		@ApiResponse(responseCode = "400", description = "Invalid request data",
+			content = @Content(schema = @Schema(implementation = MessageResponse.class))),
+		@ApiResponse(responseCode = "401", description = "Invalid credentials",
+			content = @Content(schema = @Schema(implementation = MessageResponse.class))),
+		@ApiResponse(responseCode = "500", description = "Unexpected error",
+			content = @Content(schema = @Schema(implementation = MessageResponse.class)))
+	})
 	public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
 		AuthTokens tokens = authService.login(request);
 
@@ -63,6 +90,16 @@ public class AuthController {
 	}
 
 	@PostMapping("/refresh")
+	@Operation(summary = "Refresh access token", description = "Issues a new access token using refresh token cookie")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "Token refreshed"),
+		@ApiResponse(responseCode = "400", description = "Missing refresh token",
+			content = @Content(schema = @Schema(implementation = MessageResponse.class))),
+		@ApiResponse(responseCode = "401", description = "Invalid or expired refresh token",
+			content = @Content(schema = @Schema(implementation = MessageResponse.class))),
+		@ApiResponse(responseCode = "500", description = "Unexpected error",
+			content = @Content(schema = @Schema(implementation = MessageResponse.class)))
+	})
 	public ResponseEntity<AuthResponse> refresh(@CookieValue(name = COOKIE_NAME, required = false) String refreshToken) {
 		AuthTokens tokens = authService.refresh(refreshToken);
 
@@ -84,6 +121,16 @@ public class AuthController {
 	}
 
 	@PostMapping("/logout")
+	@Operation(summary = "Logout user", description = "Invalidates refresh token and clears refresh cookie")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "Logout successful"),
+		@ApiResponse(responseCode = "400", description = "Missing refresh token",
+			content = @Content(schema = @Schema(implementation = MessageResponse.class))),
+		@ApiResponse(responseCode = "401", description = "Invalid or expired refresh token",
+			content = @Content(schema = @Schema(implementation = MessageResponse.class))),
+		@ApiResponse(responseCode = "500", description = "Unexpected error",
+			content = @Content(schema = @Schema(implementation = MessageResponse.class)))
+	})
 	public ResponseEntity<MessageResponse> logout(@CookieValue(name = COOKIE_NAME, required = false) String refreshToken) {
 		authService.logout(refreshToken);
 

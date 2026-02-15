@@ -14,8 +14,16 @@ import com.openclassrooms.mddapi.dto.TopicDto;
 import com.openclassrooms.mddapi.payload.response.MessageResponse;
 import com.openclassrooms.mddapi.service.ISubscriptionService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/topics")
+@Tag(name = "Topic subscriptions", description = "Subscribe and unsubscribe to topics")
 public class TopicSubscriptionController {
 
 	private final ISubscriptionService subscriptionService;
@@ -25,11 +33,31 @@ public class TopicSubscriptionController {
 	}
 
 	@GetMapping("/subscribed")
+	@Operation(summary = "List subscribed topics", description = "Returns topics subscribed by current user")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "Subscribed topics returned"),
+		@ApiResponse(responseCode = "403", description = "Forbidden",
+			content = @Content(schema = @Schema(implementation = MessageResponse.class))),
+		@ApiResponse(responseCode = "500", description = "Unexpected error",
+			content = @Content(schema = @Schema(implementation = MessageResponse.class)))
+	})
 	public List<TopicDto> getSubscribedTopics() {
 		return subscriptionService.getSubscribedTopics();
 	}
 
 	@PostMapping("/{id}/subscribe")
+	@Operation(summary = "Subscribe to topic", description = "Subscribes current user to topic")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "Subscribed successfully"),
+		@ApiResponse(responseCode = "403", description = "Forbidden",
+			content = @Content(schema = @Schema(implementation = MessageResponse.class))),
+		@ApiResponse(responseCode = "404", description = "Topic not found",
+			content = @Content(schema = @Schema(implementation = MessageResponse.class))),
+		@ApiResponse(responseCode = "409", description = "Already subscribed",
+			content = @Content(schema = @Schema(implementation = MessageResponse.class))),
+		@ApiResponse(responseCode = "500", description = "Unexpected error",
+			content = @Content(schema = @Schema(implementation = MessageResponse.class)))
+	})
 	public ResponseEntity<MessageResponse> subscribe(@PathVariable Long id) {
 		subscriptionService.subscribe(id);
 		
@@ -37,6 +65,16 @@ public class TopicSubscriptionController {
 	}
 
 	@DeleteMapping("/{id}/unsubscribe")
+	@Operation(summary = "Unsubscribe from topic", description = "Removes current user subscription from topic")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "Unsubscribed successfully"),
+		@ApiResponse(responseCode = "403", description = "Forbidden",
+			content = @Content(schema = @Schema(implementation = MessageResponse.class))),
+		@ApiResponse(responseCode = "404", description = "Topic not found or subscription missing",
+			content = @Content(schema = @Schema(implementation = MessageResponse.class))),
+		@ApiResponse(responseCode = "500", description = "Unexpected error",
+			content = @Content(schema = @Schema(implementation = MessageResponse.class)))
+	})
 	public ResponseEntity<MessageResponse> unsubscribe(@PathVariable Long id) {
 		subscriptionService.unsubscribe(id);
 
