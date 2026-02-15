@@ -5,21 +5,32 @@ import java.time.Instant;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class PostDto {
+	@Schema(accessMode = Schema.AccessMode.READ_ONLY, description = "Post identifier", example = "10")
 	private Long id;
 
 	@NotNull(message = "Topic id is required")
+	@Schema(description = "Topic identifier", example = "4")
 	private Long topicId;
+
+	@Schema(accessMode = Schema.AccessMode.READ_ONLY, description = "Post author identifier", example = "1")
 	private Long authorId;
 
 	@NotBlank(message = "Post title is required")
 	@Size(max = 200, message = "Max post title length is 200 characters.")
+	@Schema(description = "Post title", example = "Titre de l’article")
 	private String title;
 
 	@NotBlank(message = "Post content is required")
+	@Schema(description = "Post content", example = "Contenu de l’article")
 	private String content;
+
+	@Schema(accessMode = Schema.AccessMode.READ_ONLY, description = "Creation timestamp")
 	private Instant createdAt;
+
+	@Schema(accessMode = Schema.AccessMode.READ_ONLY, description = "Last update timestamp")
 	private Instant updatedAt;
 
 	public PostDto(Long id, Long topicId, Long authorId, String title, 
