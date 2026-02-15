@@ -2,9 +2,11 @@ package com.openclassrooms.mddapi.security;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -33,14 +35,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	}
 
 	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+	protected void doFilterInternal(
+		@NonNull HttpServletRequest request,
+		@NonNull HttpServletResponse response,
+		@NonNull FilterChain filterChain
+	)
 		throws ServletException, IOException {
 
 		String token = resolveToken(request);
 		if (token != null && jwtService.isTokenValid(token) && "access".equals(jwtService.getTokenType(token))) {
 			String subject = jwtService.getSubject(token);
 			if (subject != null) {
-				userRepository.findById(Long.valueOf(subject)).ifPresent(user -> {
+				userRepository.findById(Objects.requireNonNull(Long.valueOf(subject))).ifPresent(user -> {
 					UsernamePasswordAuthenticationToken authentication = buildAuthentication(user, request);
 					SecurityContextHolder.getContext().setAuthentication(authentication);
 				});
