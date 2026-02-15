@@ -1,6 +1,7 @@
 package com.openclassrooms.mddapi.controller;
 
 import java.time.Duration;
+import java.util.Objects;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -75,7 +76,7 @@ public class AuthController {
 		ResponseCookie refreshCookie = ResponseCookie.from(COOKIE_NAME, tokens.getRefreshToken())
 			.httpOnly(true)
 			.path(COOKIE_PATH)
-			.maxAge(Duration.ofMillis(tokens.getRefreshTokenExpiresIn()))
+			.maxAge(Objects.requireNonNull(Duration.ofMillis(tokens.getRefreshTokenExpiresIn())))
 			.build();
 
 		AuthResponse response = new AuthResponse(
@@ -106,7 +107,7 @@ public class AuthController {
 		ResponseCookie refreshCookie = ResponseCookie.from(COOKIE_NAME, tokens.getRefreshToken())
 			.httpOnly(true)
 			.path(COOKIE_PATH)
-			.maxAge(Duration.ofMillis(tokens.getRefreshTokenExpiresIn()))
+			.maxAge(Objects.requireNonNull(Duration.ofMillis(tokens.getRefreshTokenExpiresIn())))
 			.build();
 
 		AuthResponse response = new AuthResponse(
