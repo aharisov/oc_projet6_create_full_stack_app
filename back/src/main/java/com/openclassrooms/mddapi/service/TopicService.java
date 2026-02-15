@@ -1,6 +1,7 @@
 package com.openclassrooms.mddapi.service;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +37,7 @@ public class TopicService implements ITopicService {
 		Topic topic = topicMapper.toEntity(request);
 
 		try {
-			Topic newTopic = topicRepository.save(topic);
+			Topic newTopic = topicRepository.save(Objects.requireNonNull(topic));
 			log.info("Topic created: id={}", newTopic.getId());
 		} catch (DataIntegrityViolationException ex) {
 			log.warn("Topic create failed: name already exists");
@@ -46,7 +47,7 @@ public class TopicService implements ITopicService {
 
 	@Override
 	public void updateTopic(Long id, TopicDto request) {
-		Topic topic = topicRepository.findById(id)
+		Topic topic = topicRepository.findById(Objects.requireNonNull(id))
 			.orElseThrow(() -> {
 				log.warn("Topic with id {} not found", id);
 				return new NotFoundException("Topic not found");
