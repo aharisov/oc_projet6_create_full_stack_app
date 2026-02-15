@@ -15,10 +15,18 @@ import com.openclassrooms.mddapi.dto.TopicDto;
 import com.openclassrooms.mddapi.payload.response.MessageResponse;
 import com.openclassrooms.mddapi.service.ITopicService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/topics")
+@Tag(name = "Topics", description = "Topic management endpoints")
 public class TopicController {
 	
 	private ITopicService topicService;
@@ -28,11 +36,41 @@ public class TopicController {
 	}
 
 	@GetMapping
+	@Operation(summary = "List topics", description = "Returns all available topics")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "Topics returned"),
+		@ApiResponse(responseCode = "403", description = "Forbidden",
+			content = @Content(schema = @Schema(implementation = MessageResponse.class))),
+		@ApiResponse(responseCode = "500", description = "Unexpected error",
+			content = @Content(schema = @Schema(implementation = MessageResponse.class)))
+	})
 	public List<TopicDto> getTopics() {
 		return topicService.getTopics();
 	}
 
 	@PostMapping
+	@Operation(summary = "Create topic", description = "Creates a new topic")
+	@io.swagger.v3.oas.annotations.parameters.RequestBody(
+		required = true,
+		content = @Content(
+			schema = @Schema(implementation = TopicDto.class),
+			examples = @ExampleObject(
+				name = "Create topic",
+				value = "{\"name\":\"Java\",\"description\":\"Everything about Java development\"}"
+			)
+		)
+	)
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "201", description = "Topic created"),
+		@ApiResponse(responseCode = "400", description = "Invalid request data",
+			content = @Content(schema = @Schema(implementation = MessageResponse.class))),
+		@ApiResponse(responseCode = "403", description = "Forbidden",
+			content = @Content(schema = @Schema(implementation = MessageResponse.class))),
+		@ApiResponse(responseCode = "409", description = "Topic name already exists",
+			content = @Content(schema = @Schema(implementation = MessageResponse.class))),
+		@ApiResponse(responseCode = "500", description = "Unexpected error",
+			content = @Content(schema = @Schema(implementation = MessageResponse.class)))
+	})
 	public ResponseEntity<MessageResponse> createTopic(@Valid @RequestBody TopicDto request) {
 		topicService.createTopic(request);
 
@@ -41,6 +79,30 @@ public class TopicController {
 	}
 
 	@PutMapping("/{id}")
+	@Operation(summary = "Update topic", description = "Updates topic name and description")
+	@io.swagger.v3.oas.annotations.parameters.RequestBody(
+		required = true,
+		content = @Content(
+			schema = @Schema(implementation = TopicDto.class),
+			examples = @ExampleObject(
+				name = "Update topic",
+				value = "{\"name\":\"Java avancé\",\"description\":\"Threads, JVM et performance\"}"
+			)
+		)
+	)
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "Topic updated"),
+		@ApiResponse(responseCode = "400", description = "Invalid request data",
+			content = @Content(schema = @Schema(implementation = MessageResponse.class))),
+		@ApiResponse(responseCode = "403", description = "Forbidden",
+			content = @Content(schema = @Schema(implementation = MessageResponse.class))),
+		@ApiResponse(responseCode = "404", description = "Topic not found",
+			content = @Content(schema = @Schema(implementation = MessageResponse.class))),
+		@ApiResponse(responseCode = "409", description = "Topic name already exists",
+			content = @Content(schema = @Schema(implementation = MessageResponse.class))),
+		@ApiResponse(responseCode = "500", description = "Unexpected error",
+			content = @Content(schema = @Schema(implementation = MessageResponse.class)))
+	})
 	public ResponseEntity<MessageResponse> updateTopic(
 		@PathVariable Long id, 
 		@Valid @RequestBody TopicDto request
