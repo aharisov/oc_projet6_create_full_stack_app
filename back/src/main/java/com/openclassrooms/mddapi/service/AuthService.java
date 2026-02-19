@@ -24,6 +24,12 @@ import com.openclassrooms.mddapi.repository.RefreshTokenRepository;
 import com.openclassrooms.mddapi.security.AuthTokens;
 import com.openclassrooms.mddapi.security.JwtService;
 
+/**
+ * Implements authentication workflows and refresh-token lifecycle management.
+ *
+ * <p>Refresh tokens are stored as SHA-256 hashes to avoid persisting raw secrets in
+ * the database.</p>
+ */
 @Service
 public class AuthService implements IAuthService {
 	private static final Logger log = LoggerFactory.getLogger(AuthService.class);
@@ -42,9 +48,17 @@ public class AuthService implements IAuthService {
 		this.jwtService = jwtService;
 	}
 
+	/**
+	 * Registers a user after validating required fields and uniqueness constraints.
+	 *
+	 * @param request signup payload
+	 * @return {@code true} when registration succeeds
+	 * @throws BadRequestException when required fields are missing
+	 * @throws ConflictException when email or username is already used
+	 */
 	@Override
-    @Transactional
-    public Boolean register(SignupRequest request) {
+	@Transactional
+	public Boolean register(SignupRequest request) {
 		String email = request.getEmail() != null ? request.getEmail().trim().toLowerCase() : null;
 		String username = request.getUsername() != null ? request.getUsername().trim() : null;
 
@@ -80,7 +94,15 @@ public class AuthService implements IAuthService {
 		return true;
     }
 
-    @Override
+	/**
+	 * Authenticates a user with email or username and issues token pair.
+	 *
+	 * @param request login payload
+	 * @return new access and refresh tokens
+	 * @throws BadRequestException when credentials are missing
+	 * @throws UnauthorizedException when credentials are invalid
+	 */
+	@Override
 	public AuthTokens login(LoginRequest request) {
 		String identifier = request.getIdentifier() != null ? request.getIdentifier().trim() : null;
 		String password = request.getPassword();
@@ -110,6 +132,14 @@ public class AuthService implements IAuthService {
 		);
 	}
 
+	/**
+	 * Rotates the refresh token and returns a new token pair.
+	 *
+	 * @param refreshToken refresh token sent by the client
+	 * @return renewed access and refresh tokens
+	 * @throws BadRequestException when token is missing
+	 * @throws UnauthorizedException when token is invalid, expired, or mismatched
+	 */
 	@Override
 	public AuthTokens refresh(String refreshToken) {
 		if (refreshToken == null || refreshToken.isBlank()) {
@@ -154,6 +184,13 @@ public class AuthService implements IAuthService {
 		);
 	}
 
+	/**
+	 * Invalidates an existing refresh token for logout.
+	 *
+	 * @param refreshToken refresh token sent by the client
+	 * @throws BadRequestException when token is missing
+	 * @throws UnauthorizedException when token is invalid, expired, or mismatched
+	 */
 	@Override
 	public void logout(String refreshToken) {
 		if (refreshToken == null || refreshToken.isBlank()) {
@@ -191,7 +228,14 @@ public class AuthService implements IAuthService {
 		log.info("Logout success: userId={}", userId);
 	}
 
-    private User resolveUser(String identifier) {
+	/**
+	 * Resolves a user by identifier (username or email).
+	 *
+	 * @param identifier login identifier
+	 * @return resolved user
+	 * @throws UnauthorizedException when no matching user exists
+	 */
+	private User resolveUser(String identifier) {
 		String normalized = identifier.toLowerCase();
 		if (normalized.contains("@")) {
 			return userRepository.findByEmail(normalized)
@@ -202,6 +246,12 @@ public class AuthService implements IAuthService {
 				.orElseThrow(() -> new UnauthorizedException("Invalid credentials")));
 	}
 
+	/**
+	 * Stores or updates the hashed refresh token for a user.
+	 *
+	 * @param user token owner
+	 * @param refreshToken raw refresh token
+	 */
 	private void saveRefreshToken(User user, String refreshToken) {
 		RefreshToken storedRefreshToken = refreshTokenRepository.findByUserId(user.getId())
 			.orElseGet(RefreshToken::new);
@@ -212,6 +262,12 @@ public class AuthService implements IAuthService {
 		refreshTokenRepository.save(storedRefreshToken);
 	}
 
+	/**
+	 * Produces a stable SHA-256 hash for token persistence and comparison.
+	 *
+	 * @param token raw token value
+	 * @return hexadecimal SHA-256 hash
+	 */
 	private String hashToken(String token) {
 		try {
 			MessageDigest digest = MessageDigest.getInstance("SHA-256");
