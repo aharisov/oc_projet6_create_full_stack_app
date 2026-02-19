@@ -22,6 +22,11 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+/**
+ * Resolves access tokens from the Authorization header and populates the security context.
+ *
+ * <p>Invalid tokens are ignored and the filter chain continues without authentication.</p>
+ */
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
@@ -34,6 +39,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		this.userRepository = userRepository;
 	}
 
+	/**
+	 * Authenticates the request when a valid access token is present.
+	 *
+	 * @param request current request
+	 * @param response current response
+	 * @param filterChain remaining filters
+	 * @throws ServletException when servlet filtering fails
+	 * @throws IOException when IO operations fail
+	 */
 	@Override
 	protected void doFilterInternal(
 		@NonNull HttpServletRequest request,
@@ -58,6 +72,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		filterChain.doFilter(request, response);
 	}
 
+	/**
+	 * Extracts bearer token from the Authorization header.
+	 *
+	 * @param request current request
+	 * @return token without {@code Bearer } prefix, or {@code null} when missing
+	 */
 	private String resolveToken(HttpServletRequest request) {
 		String header = request.getHeader("Authorization");
 		if (StringUtils.hasText(header) && header.startsWith("Bearer ")) {
@@ -66,6 +86,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		return null;
 	}
 
+	/**
+	 * Builds a stateless authentication object for Spring Security context.
+	 *
+	 * @param user authenticated user
+	 * @param request current request
+	 * @return authentication token using user email as principal
+	 */
 	private UsernamePasswordAuthenticationToken buildAuthentication(User user, HttpServletRequest request) {
 		UsernamePasswordAuthenticationToken authentication =
 			new UsernamePasswordAuthenticationToken(user.getEmail(), null, Collections.emptyList());
