@@ -22,31 +22,128 @@ select {
 }
 
 .cont {
+    position: relative;
     width: 100%;
     max-width: 911px;
     margin: 0 auto;
     padding: 0 38px;
 }
 
+header {
+    height: 92px;
+    margin-bottom: 120px;
+    border-bottom: 1px solid #000;
+}
+header .cont {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+header .logo {
+    width: 140px;
+    cursor: pointer;
+}
+header .logo img {
+    width: 100%;
+    height: auto;
+}
+
 .btn {
     height: 40px;
     font-size: 16px;
     font-weight: 600;
+    border-radius: 8px;
     transition: 0.2s linear;
     cursor: pointer;
 }
 .btn-white {
     border: 1px solid #000;
-    border-radius: 8px;
     background: #fff;
 }
 .btn-white:hover {
     background: #000;
     color: #fff;
 }
+.btn-violet {
+    min-width: 128px;
+    padding: 0 10px;
+    border: 1px solid transparent;
+    background: #7763C5;
+    color: #fff;
+}
+.btn-violet:hover {
+    background: #fff;
+    border-color: #7763C5;
+    color: #000;
+}
 
 .flex-center {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+/* login, register forms */
+.auth-form-wrap {
+    max-width: 250px;
+    margin: 0 auto;
+}
+.auth-form-wrap .form-title {
+    margin-bottom: 36px;
+    text-align: center;
+}
+.auth-form-wrap .form-title h1 {
+    font-size: 24px;
+    font-weight: normal;
+}
+.auth-form-wrap .form-row {
+    margin-bottom: 24px;
+}
+.auth-form-wrap .form-row label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 16px;
+}
+.auth-form-wrap .form-row input {
+    width: 100%;
+    max-width: 250px;
+    height: 50px;
+    padding: 0 10px;
+    border: 1px solid #000;
+    border-radius: 8px;
+    font-size: 16px;
+}
+.auth-form-wrap .form-row input.ng-invalid.ng-touched {
+    border-color: rgb(172, 14, 14);
+}
+.auth-form-wrap .form-error {
+    margin: 5px 0 0 5px;
+    font-size: 12px;
+    color: rgb(172, 14, 14);
+}
+.auth-form-wrap button[type=submit] {
+    display: block;
+    margin: 0 auto;
+}
+
+@media (max-width: 1199px) {
+    header {
+        margin-bottom: 44px;
+    }
+
+    .btn-return {
+        left: 20px;
+    }
+}
+
+@media (max-width: 479px) {
+    header.not-auth {
+        height: auto;
+        margin: 86px 0 0;
+        border: none;
+    }
+    header.not-auth .logo {
+        width: 225px;
+        margin: 0 auto;
+    }
 }
