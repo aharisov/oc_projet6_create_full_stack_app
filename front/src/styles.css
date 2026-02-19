@@ -125,8 +125,12 @@ header .logo img {
     display: block;
     margin: 0 auto;
 }
-.auth-form-wrap .submit-error {
+.auth-form-wrap .submit-error, 
+.auth-form-wrap .form-success {
     margin-bottom: 20px;
+}
+.auth-form-wrap .form-success {
+    color: rgb(62, 183, 62);
 }
 
 @media (max-width: 1199px) {
