@@ -24,6 +24,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
+/**
+ * Provides topic listing and management endpoints.
+ *
+ * <p>Conflict and not-found scenarios are delegated to the topic service.</p>
+ */
 @RestController
 @RequestMapping("/topics")
 @Tag(name = "Topics", description = "Topic management endpoints")

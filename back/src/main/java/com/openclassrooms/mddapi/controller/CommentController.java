@@ -23,6 +23,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
+/**
+ * Handles comment read/write endpoints under a post resource.
+ *
+ * <p>All operations are scoped to a post id passed in the path.</p>
+ */
 @RestController
 @RequestMapping("/posts/{postId}/comments")
 @Tag(name = "Comments", description = "Comment endpoints linked to posts")

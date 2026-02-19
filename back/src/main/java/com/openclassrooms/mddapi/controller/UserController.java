@@ -20,6 +20,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
+/**
+ * Exposes profile endpoints for the currently authenticated user.
+ */
 @RestController
 @RequestMapping("/users/me")
 @Tag(name = "Users", description = "Current user profile endpoints")
