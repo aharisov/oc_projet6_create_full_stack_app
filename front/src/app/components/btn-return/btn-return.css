@@ -1,6 +1,6 @@
 .btn-return-wrap {
     position: absolute;
-    top: 140px;
+    top: 216px;
     left: 10px;
     width: 100%;
 }
@@ -17,6 +17,11 @@
     transform: scale(1.2) translateX(-5px);
 }
 
+@media (max-width: 1199px) {
+    .btn-return-wrap {
+        top: 140px;
+    }
+}
 @media (max-width: 479px) {
     .btn-return-wrap {
         top: 40px;
