@@ -15,6 +15,9 @@ import com.openclassrooms.mddapi.mapper.TopicMapper;
 import com.openclassrooms.mddapi.model.Topic;
 import com.openclassrooms.mddapi.repository.TopicRepository;
 
+/**
+ * Handles topic catalog operations and uniqueness constraints on topic names.
+ */
 @Service
 public class TopicService implements ITopicService {
 	private static final Logger log = LoggerFactory.getLogger(TopicService.class);
@@ -27,11 +30,22 @@ public class TopicService implements ITopicService {
 		this.topicMapper = topicMapper;
 	}
 
+	/**
+	 * Returns all available topics.
+	 *
+	 * @return topic list
+	 */
 	@Override
 	public List<TopicDto> getTopics() {
 		return topicMapper.toDto(topicRepository.findAll());
 	}
 
+	/**
+	 * Creates a topic and enforces unique topic names.
+	 *
+	 * @param request topic payload
+	 * @throws ConflictException when topic name already exists
+	 */
 	@Override
 	public void createTopic(TopicDto request) {
 		Topic topic = topicMapper.toEntity(request);
@@ -45,6 +59,14 @@ public class TopicService implements ITopicService {
 		}
 	}
 
+	/**
+	 * Updates topic name and description.
+	 *
+	 * @param id topic id
+	 * @param request topic payload
+	 * @throws NotFoundException when topic does not exist
+	 * @throws ConflictException when new topic name already exists
+	 */
 	@Override
 	public void updateTopic(Long id, TopicDto request) {
 		Topic topic = topicRepository.findById(Objects.requireNonNull(id))

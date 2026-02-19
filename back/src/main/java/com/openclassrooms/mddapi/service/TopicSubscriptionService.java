@@ -19,6 +19,9 @@ import com.openclassrooms.mddapi.model.User;
 import com.openclassrooms.mddapi.repository.SubscriptionRepository;
 import com.openclassrooms.mddapi.repository.TopicRepository;
 
+/**
+ * Manages topic subscriptions for the currently authenticated user.
+ */
 @Service
 public class TopicSubscriptionService implements ISubscriptionService {
 	private static final Logger log = LoggerFactory.getLogger(TopicSubscriptionService.class);
@@ -40,6 +43,14 @@ public class TopicSubscriptionService implements ISubscriptionService {
 		this.userService = userService;
 	}
 
+	/**
+	 * Subscribes the current user to a topic.
+	 *
+	 * @param topicId topic id
+	 * @throws BadRequestException when topic id is null
+	 * @throws NotFoundException when topic does not exist
+	 * @throws ConflictException when subscription already exists
+	 */
 	@Override
 	@Transactional
 	public void subscribe(Long topicId) {
@@ -67,6 +78,11 @@ public class TopicSubscriptionService implements ISubscriptionService {
 		log.info("User {} subscribed to topic {}", user.getId(), topicId);
 	}
 
+	/**
+	 * Returns topics currently subscribed by the user.
+	 *
+	 * @return subscribed topic list
+	 */
 	@Override
 	public List<TopicDto> getSubscribedTopics() {
 		Long userId = userService.getCurrentUser().getId();
@@ -74,6 +90,13 @@ public class TopicSubscriptionService implements ISubscriptionService {
 		return topicMapper.toDto(subscriptionRepository.findSubscribedTopicsByUserId(userId));
 	}
 
+	/**
+	 * Removes the current user's subscription for a topic.
+	 *
+	 * @param topicId topic id
+	 * @throws BadRequestException when topic id is null
+	 * @throws NotFoundException when topic or subscription does not exist
+	 */
 	@Override
 	@Transactional
 	public void unsubscribe(Long topicId) {

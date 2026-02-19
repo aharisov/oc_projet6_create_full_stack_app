@@ -17,6 +17,9 @@ import com.openclassrooms.mddapi.model.User;
 import com.openclassrooms.mddapi.repository.PostRepository;
 import com.openclassrooms.mddapi.repository.TopicRepository;
 
+/**
+ * Business service for feed visibility, post retrieval, and post creation.
+ */
 @Service
 public class PostService implements IPostService {
 	private static final Logger log = LoggerFactory.getLogger(PostService.class);
@@ -38,6 +41,12 @@ public class PostService implements IPostService {
 		this.userService = userService;
 	}
 
+	/**
+	 * Returns the current user's feed sorted by creation timestamp.
+	 *
+	 * @param sortOrder optional value, {@code asc} for oldest first, default is newest first
+	 * @return posts from topics subscribed by the current user
+	 */
 	@Override
 	public List<PostDto> getFeed(String sortOrder) {
 		Long userId = userService.getCurrentUser().getId();
@@ -48,6 +57,13 @@ public class PostService implements IPostService {
 		return postMapper.toDto(postRepository.findAllSubscribedByUserIdOrderByCreatedAtDesc(userId));
 	}
 
+	/**
+	 * Returns one post only if it belongs to a topic subscribed by the current user.
+	 *
+	 * @param id post id
+	 * @return post details
+	 * @throws NotFoundException when post is missing or not visible for the user
+	 */
 	@Override
 	public PostDto getPost(Long id) {
 		Long userId = userService.getCurrentUser().getId();
@@ -67,6 +83,12 @@ public class PostService implements IPostService {
 		return postData;
 	}
 
+	/**
+	 * Creates a post for the current user in the requested topic.
+	 *
+	 * @param request post payload
+	 * @throws NotFoundException when topic does not exist
+	 */
 	@Override
 	public void createPost(PostDto request) {
 		User author = userService.getCurrentUser();
@@ -84,6 +106,14 @@ public class PostService implements IPostService {
 		log.info("Post created: id={}", savedPost.getId());
 	}
 
+	/**
+	 * Validates post existence and returns {@code true} when found.
+	 *
+	 * @param postId post id
+	 * @return {@code true} when the post exists
+	 * @throws BadRequestException when post id is null
+	 * @throws NotFoundException when post does not exist
+	 */
 	@Override
 	public Boolean isPostExists(Long postId) {
 		if (postId == null) {

@@ -18,6 +18,9 @@ import com.openclassrooms.mddapi.payload.request.UpdateUserRequest;
 import com.openclassrooms.mddapi.payload.response.UserProfileResponse;
 import com.openclassrooms.mddapi.repository.UserRepository;
 
+/**
+ * Resolves the authenticated user and applies profile update rules.
+ */
 @Service
 public class UserService implements IUserService {
 	private static final Logger log = LoggerFactory.getLogger(UserService.class);
@@ -30,6 +33,12 @@ public class UserService implements IUserService {
 		this.passwordEncoder = passwordEncoder;
 	}
 
+	/**
+	 * Resolves the authenticated user from the Spring security context.
+	 *
+	 * @return authenticated user entity
+	 * @throws UnauthorizedException when authentication is missing or user cannot be resolved
+	 */
 	@Override
 	public User getCurrentUser() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -45,6 +54,11 @@ public class UserService implements IUserService {
 			});
 	}
 
+	/**
+	 * Returns the current user profile projection.
+	 *
+	 * @return current user profile
+	 */
 	@Override
 	public UserProfileResponse getUserProfile() {
 		User user = this.getCurrentUser();
@@ -58,6 +72,15 @@ public class UserService implements IUserService {
 		);
 	}
 
+	/**
+	 * Applies profile updates for email, username, and password.
+	 *
+	 * <p>Only non-null fields are considered, and at least one effective change is required.</p>
+	 *
+	 * @param request update payload
+	 * @throws BadRequestException when request is null or does not change any field
+	 * @throws ConflictException when email or username already exists
+	 */
 	@Override
 	@Transactional
 	public void updateUser(UpdateUserRequest request) {
@@ -78,6 +101,13 @@ public class UserService implements IUserService {
 		log.info("User updated: id={}", user.getId());
 	}
 
+	/**
+	 * Validates and applies an email update if needed.
+	 *
+	 * @param user user to mutate
+	 * @param rawEmail candidate email
+	 * @return {@code true} if the value was changed
+	 */
 	private boolean updateEmail(User user, String rawEmail) {
 		if (rawEmail == null) {
 			return false;
@@ -99,6 +129,13 @@ public class UserService implements IUserService {
 		return true;
 	}
 
+	/**
+	 * Validates and applies a username update if needed.
+	 *
+	 * @param user user to mutate
+	 * @param rawUsername candidate username
+	 * @return {@code true} if the value was changed
+	 */
 	private boolean updateUsername(User user, String rawUsername) {
 		if (rawUsername == null) {
 			return false;
@@ -120,6 +157,13 @@ public class UserService implements IUserService {
 		return true;
 	}
 
+	/**
+	 * Validates and applies a password update if needed.
+	 *
+	 * @param user user to mutate
+	 * @param rawPassword candidate password
+	 * @return {@code true} if the value was changed
+	 */
 	private boolean updatePassword(User user, String rawPassword) {
 		if (rawPassword == null) {
 			return false;

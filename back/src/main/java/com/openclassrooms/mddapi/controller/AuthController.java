@@ -28,6 +28,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
+/**
+ * Exposes authentication endpoints for registration, login, token refresh, and logout.
+ *
+ * <p>Refresh tokens are exchanged through an HTTP-only cookie, while access tokens are
+ * returned in the response body.</p>
+ */
 @RestController
 @RequestMapping("/auth")
 @Tag(name = "Authentication", description = "Register, login, refresh and logout endpoints")

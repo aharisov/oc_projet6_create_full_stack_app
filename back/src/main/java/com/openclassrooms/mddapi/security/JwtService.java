@@ -17,6 +17,12 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import javax.crypto.SecretKey;
 
+/**
+ * Utility service for JWT generation and validation.
+ *
+ * <p>Access and refresh tokens share the same signing key and are distinguished by a
+ * {@code type} claim.</p>
+ */
 @Service
 public class JwtService {
 
@@ -34,10 +40,22 @@ public class JwtService {
 		this.refreshTokenExpirationMs = refreshTokenExpirationMs;
 	}
 
+	/**
+	 * Generates an access token for a user.
+	 *
+	 * @param user authenticated user
+	 * @return signed access token
+	 */
 	public String generateAccessToken(User user) {
 		return generateToken(user, accessTokenExpirationMs, "access");
 	}
 
+	/**
+	 * Generates a refresh token for a user.
+	 *
+	 * @param user authenticated user
+	 * @return signed refresh token
+	 */
 	public String generateRefreshToken(User user) {
 		return generateToken(user, refreshTokenExpirationMs, "refresh");
 	}
@@ -50,6 +68,12 @@ public class JwtService {
 		return refreshTokenExpirationMs;
 	}
 
+	/**
+	 * Validates token signature and payload format.
+	 *
+	 * @param token raw JWT
+	 * @return {@code true} when token can be parsed with the configured key
+	 */
 	public boolean isTokenValid(String token) {
 		try {
 			parseClaims(token);
@@ -59,10 +83,22 @@ public class JwtService {
 		}
 	}
 
+	/**
+	 * Returns token subject (user id as string).
+	 *
+	 * @param token raw JWT
+	 * @return subject claim value
+	 */
 	public String getSubject(String token) {
 		return parseClaims(token).getSubject();
 	}
 
+	/**
+	 * Returns token type claim ({@code access} or {@code refresh}).
+	 *
+	 * @param token raw JWT
+	 * @return token type or {@code null} when absent
+	 */
 	public String getTokenType(String token) {
 		Object type = parseClaims(token).get("type");
 		return type != null ? type.toString() : null;

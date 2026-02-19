@@ -25,6 +25,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
+/**
+ * Exposes post feed and single-post endpoints for authenticated users.
+ *
+ * <p>Creation assigns author and creation date server-side.</p>
+ */
 @RestController
 @RequestMapping("/posts")
 @Tag(name = "Posts", description = "Post feed and article endpoints")

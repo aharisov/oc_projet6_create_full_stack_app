@@ -1,5 +1,8 @@
 package com.openclassrooms.mddapi.security;
 
+/**
+ * Immutable token bundle returned by authentication workflows.
+ */
 public class AuthTokens {
 	private final String accessToken;
 	private final String refreshToken;
