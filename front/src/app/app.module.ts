@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core';
+import { provideHttpClient } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { ReactiveFormsModule } from '@angular/forms';
 
@@ -8,7 +9,6 @@ import { HomeComponent } from './features/home/home.component';
 import { LoginComponent } from './features/auth/components/login/login.component';
 import { RegisterComponent } from './features/auth/components/register/register.component';
 import { TopicComponent } from './topic/topic.component';
-import { BtnReturn } from "src/app/components/btn-return/btn-return";
 
 @NgModule({
   declarations: [
@@ -21,10 +21,9 @@ import { BtnReturn } from "src/app/components/btn-return/btn-return";
     BrowserModule,
     ReactiveFormsModule,
     AppRoutingModule,
-    RegisterComponent,
-    BtnReturn
-],
-  providers: [],
+    RegisterComponent
+  ],
+  providers: [provideHttpClient()],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
