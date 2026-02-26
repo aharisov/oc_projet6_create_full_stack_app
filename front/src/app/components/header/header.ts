@@ -1,13 +1,13 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, HostListener, inject } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 
 import { AuthService } from 'src/app/features/auth/services/auth.service';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [RouterLink, AsyncPipe],
+  imports: [RouterLink, RouterLinkActive, AsyncPipe],
   templateUrl: './header.html',
   styleUrl: './header.css'
 })
