@@ -5,6 +5,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
+import { HeaderComponent } from './components/header/header';
 import { HomeComponent } from './features/home/home.component';
 import { LoginComponent } from './features/auth/components/login/login.component';
 import { RegisterComponent } from './features/auth/components/register/register.component';
@@ -21,6 +22,7 @@ import { TopicComponent } from './topic/topic.component';
     BrowserModule,
     ReactiveFormsModule,
     AppRoutingModule,
+    HeaderComponent,
     LoginComponent,
     RegisterComponent,
   ],

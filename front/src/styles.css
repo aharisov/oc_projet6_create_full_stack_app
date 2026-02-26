@@ -29,25 +29,6 @@ select {
     padding: 0 38px;
 }
 
-header {
-    height: 92px;
-    margin-bottom: 120px;
-    border-bottom: 1px solid #000;
-}
-header .cont {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-header .logo {
-    width: 140px;
-    cursor: pointer;
-}
-header .logo img {
-    width: 100%;
-    height: auto;
-}
-
 .btn {
     height: 40px;
     font-size: 16px;
@@ -134,23 +115,13 @@ header .logo img {
 }
 
 @media (max-width: 1199px) {
-    header {
-        margin-bottom: 44px;
-    }
-
     .btn-return {
         left: 20px;
     }
 }
 
-@media (max-width: 479px) {
-    header.not-auth {
-        height: auto;
-        margin: 86px 0 0;
-        border: none;
-    }
-    header.not-auth .logo {
-        width: 225px;
-        margin: 0 auto;
+@media (max-width: 1023px) {
+    .cont {
+        padding: 0 20px;
     }
 }

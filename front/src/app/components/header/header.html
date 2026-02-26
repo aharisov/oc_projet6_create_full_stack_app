@@ -1,0 +1,38 @@
+@if (isAuthenticated$ | async) {
+  <header class="auth">
+    <div class="cont">
+      <div class="logo" [routerLink]="['/']"><img src="/assets/logo.svg" alt="MDD"></div>
+      <nav class="user-menu" [class.active]="isMobileMenuOpen">
+        <span class="nav-left">
+          <button class="btn-logout" type="button">Se déconnecter</button>
+          <a [routerLink]="['/']" (click)="closeMobileMenu()">Articles</a>
+          <a href="#" (click)="closeMobileMenu()">Thèmes</a>
+        </span>
+        <span class="nav-right">
+          <a href="#" title="Profil" (click)="closeMobileMenu()">
+            <img src="/assets/ic_user.svg" alt="Profil">
+          </a>
+        </span>
+      </nav>
+      <button
+        type="button"
+        class="mobile-burger"
+        [class.active]="isMobileMenuOpen"
+        [attr.aria-expanded]="isMobileMenuOpen"
+        aria-label="Ouvrir le menu"
+        (click)="toggleMobileMenu()"
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </header>
+  <div class="menu-backdrop" [class.active]="isMobileMenuOpen" (click)="closeMobileMenu()"></div>
+} @else {
+  <header class="not-auth">
+    <div class="cont">
+      <div class="logo" [routerLink]="['/']"><img src="/assets/logo.svg" alt="MDD"></div>
+    </div>
+  </header>
+}
