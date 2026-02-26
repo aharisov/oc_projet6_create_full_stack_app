@@ -1,0 +1,18 @@
+:host {
+  display: block;
+}
+
+.topics-page h1 {
+  margin-bottom: 22px;
+  font-size: 32px;
+}
+
+.status-info,
+.status-error {
+  margin-bottom: 20px;
+  font-size: 16px;
+}
+
+.status-error {
+  color: #a40f0f;
+}

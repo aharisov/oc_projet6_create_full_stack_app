@@ -1,0 +1,19 @@
+<div class="topics-page">
+  <div class="cont">
+    @if (isLoading) {
+      <p class="status-info">Chargement des thèmes...</p>
+    } @else if (loadError) {
+      <p class="status-error">{{ loadError }}</p>
+    } @else if (topics.length === 0) {
+      <p class="status-info">Aucun thème disponible.</p>
+    } @else {
+      @if (actionError) {
+        <p class="status-error">{{ actionError }}</p>
+      }
+      <app-topic-list
+        [topics]="topics"
+        [pendingTopicIds]="pendingTopicIds"
+      />
+    }
+  </div>
+</div>

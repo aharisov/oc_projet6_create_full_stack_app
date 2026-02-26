@@ -1,0 +1,8 @@
+<section class="topics-grid">
+  @for (topic of topics; track topic.id) {
+    <app-topic-item
+      [topic]="topic"
+      [isPending]="pendingTopicIds.has(topic.id)"
+    />
+  }
+</section>
