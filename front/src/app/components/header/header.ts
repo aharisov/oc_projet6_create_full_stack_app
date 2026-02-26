@@ -1,6 +1,6 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, HostListener, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 import { AuthService } from 'src/app/features/auth/services/auth.service';
 
@@ -13,8 +13,10 @@ import { AuthService } from 'src/app/features/auth/services/auth.service';
 })
 export class HeaderComponent {
   private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
   readonly isAuthenticated$ = this.authService.isAuthenticated$;
   isMobileMenuOpen = false;
+  isLoggingOut = false;
 
   toggleMobileMenu(): void {
     this.isMobileMenuOpen = !this.isMobileMenuOpen;
@@ -49,5 +51,28 @@ export class HeaderComponent {
     if (window.innerWidth > 639) {
       this.closeMobileMenu();
     }
+  }
+
+  onLogout(): void {
+    if (this.isLoggingOut) {
+      return;
+    }
+
+    this.isLoggingOut = true;
+    this.authService.logout().subscribe({
+      next: () => {
+        this.finishLogout();
+      },
+      error: () => {
+        this.authService.clearAuthSession();
+        this.finishLogout();
+      }
+    });
+  }
+
+  private finishLogout(): void {
+    this.isLoggingOut = false;
+    this.closeMobileMenu();
+    void this.router.navigate(['/']);
   }
 }

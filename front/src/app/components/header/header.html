@@ -4,7 +4,9 @@
       <div class="logo" [routerLink]="['/']"><img src="/assets/logo.svg" alt="MDD"></div>
       <nav class="user-menu" [class.active]="isMobileMenuOpen">
         <span class="nav-left">
-          <button class="btn-logout" type="button">Se déconnecter</button>
+          <button class="btn-logout" type="button" [disabled]="isLoggingOut" (click)="onLogout()">
+            {{ isLoggingOut ? 'Déconnexion...' : 'Se déconnecter' }}
+          </button>
           <a [routerLink]="['/']" (click)="closeMobileMenu()">Articles</a>
           <a href="#" (click)="closeMobileMenu()">Thèmes</a>
         </span>
