@@ -1,0 +1,32 @@
+.btn-return-wrap {
+    position: absolute;
+    top: 216px;
+    z-index: 999;
+    left: 10px;
+    width: 100%;
+}
+.btn-return {
+    width: 40px;
+    height: 22px;
+    border: none;
+    background: url("/assets/ic_arrow.svg") 0 0 no-repeat;
+    background-size: cover;
+    cursor: pointer;
+    transition: 0.2s linear;
+}
+.btn-return:hover {
+    transform: scale(1.2) translateX(-5px);
+}
+
+@media (max-width: 1199px) {
+    .btn-return-wrap {
+        top: 140px;
+    }
+}
+@media (max-width: 479px) {
+    .btn-return-wrap {
+        top: 40px;
+        left: 0;
+        width: auto;
+    }
+}
