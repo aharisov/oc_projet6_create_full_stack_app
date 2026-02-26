@@ -1,6 +1,7 @@
 .btn-return-wrap {
     position: absolute;
     top: 216px;
+    z-index: 999;
     left: 10px;
     width: 100%;
 }
