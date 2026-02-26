@@ -10,13 +10,11 @@ import { HomeComponent } from './features/home/home.component';
 import { LoginComponent } from './features/auth/components/login/login.component';
 import { RegisterComponent } from './features/auth/components/register/register.component';
 import { authInterceptor } from './features/auth/interceptors/auth.interceptor';
-import { TopicComponent } from './topic/topic.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent,
-    TopicComponent
+    HomeComponent
   ],
   imports: [
     BrowserModule,
