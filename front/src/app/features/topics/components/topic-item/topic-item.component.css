@@ -1,0 +1,39 @@
+.topic-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 6px;
+  min-height: 161px;
+  padding: 12px 22px;
+  border-radius: 8px;
+  background: #F5F5F5;
+}
+
+.topic-content h2 {
+  margin-bottom: 15px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.topic-content p {
+  margin-bottom: 10px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.topic-card button {
+  align-self: center;
+  min-width: 167px;
+}
+
+@media (max-width: 639px) {
+  .topic-card {
+    min-height: unset;
+  }
+}
+
+@media (max-width: 479px) {
+  .topic-card button {
+    min-width: 139px;
+  }
+}
