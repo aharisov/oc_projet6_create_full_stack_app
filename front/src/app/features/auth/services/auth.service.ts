@@ -17,6 +17,7 @@ export class AuthService {
   private readonly loginUrl = `${environment.apiBaseUrl}/auth/login`;
   private readonly refreshUrl = `${environment.apiBaseUrl}/auth/refresh`;
   private readonly logoutUrl = `${environment.apiBaseUrl}/auth/logout`;
+  private readonly sessionHintKey = 'mdd_session_hint';
 
   private accessToken: string | null = null;
   private refreshRequest$: Observable<string> | null = null;
@@ -33,6 +34,7 @@ export class AuthService {
     }).pipe(
       tap((response) => {
         this.setAccessToken(response.accessToken);
+        this.setSessionHint(true);
       })
     );
   }
@@ -41,9 +43,18 @@ export class AuthService {
    * Called once at app startup to rebuild in-memory auth state from refresh cookie.
    */
   tryRestoreSession(): Observable<boolean> {
+    // We cannot read HttpOnly refresh cookies from JS. This non-sensitive hint prevents
+    // unnecessary refresh calls (and noisy 400 logs) when user has not logged in.
+    if (!this.hasSessionHint()) {
+      return of(false);
+    }
+
     return this.refreshAccessToken().pipe(
       map(() => true),
-      catchError(() => of(false))
+      catchError(() => {
+        this.setSessionHint(false);
+        return of(false);
+      })
     );
   }
 
@@ -99,11 +110,25 @@ export class AuthService {
 
   clearAuthSession(): void {
     this.setAccessToken(null);
+    this.setSessionHint(false);
     this.refreshRequest$ = null;
   }
 
   private setAccessToken(token: string | null): void {
     this.accessToken = token;
     this.isAuthenticatedSubject.next(Boolean(token));
+  }
+
+  private setSessionHint(value: boolean): void {
+    if (value) {
+      localStorage.setItem(this.sessionHintKey, '1');
+      return;
+    }
+
+    localStorage.removeItem(this.sessionHintKey);
+  }
+
+  private hasSessionHint(): boolean {
+    return localStorage.getItem(this.sessionHintKey) === '1';
   }
 }
