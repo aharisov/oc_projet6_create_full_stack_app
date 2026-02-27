@@ -15,6 +15,9 @@ public class PostDto {
 	@Schema(description = "Topic identifier", example = "4")
 	private Long topicId;
 
+	@Schema(accessMode = Schema.AccessMode.READ_ONLY, description = "Post topic name", example = "Java")
+	private String topicName;
+
 	@Schema(accessMode = Schema.AccessMode.READ_ONLY, description = "Post author identifier", example = "1")
 	private Long authorId;
 
@@ -52,6 +55,9 @@ public class PostDto {
 
 	public Long getTopicId() { return topicId; }
 	public void setTopicId(Long topicId) { this.topicId = topicId; }
+
+	public String getTopicName() { return topicName; }
+	public void setTopicName(String topicName) { this.topicName = topicName; }
 
 	public Long getAuthorId() { return authorId; }
 	public void setAuthorId(Long authorId) { this.authorId = authorId; }

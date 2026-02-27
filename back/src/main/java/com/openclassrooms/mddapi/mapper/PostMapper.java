@@ -17,6 +17,7 @@ public interface PostMapper extends EntityMapper<PostDto, Post> {
 
 	@Override
 	@Mapping(target = "topicId", source = "topic.id")
+	@Mapping(target = "topicName", source = "topic.name")
 	@Mapping(target = "authorId", source = "author.id")
 	@Mapping(target = "authorName", source = "author.username")
 	PostDto toDto(Post entity);
