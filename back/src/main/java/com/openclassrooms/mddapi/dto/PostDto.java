@@ -18,6 +18,9 @@ public class PostDto {
 	@Schema(accessMode = Schema.AccessMode.READ_ONLY, description = "Post author identifier", example = "1")
 	private Long authorId;
 
+	@Schema(accessMode = Schema.AccessMode.READ_ONLY, description = "Post author username", example = "johndoe")
+	private String authorName;
+
 	@NotBlank(message = "Post title is required")
 	@Size(max = 200, message = "Max post title length is 200 characters.")
 	@Schema(description = "Post title", example = "Titre de l’article")
@@ -52,6 +55,9 @@ public class PostDto {
 
 	public Long getAuthorId() { return authorId; }
 	public void setAuthorId(Long authorId) { this.authorId = authorId; }
+
+	public String getAuthorName() { return authorName; }
+	public void setAuthorName(String authorName) { this.authorName = authorName; }
 
 	public String getTitle() { return title; }
 	public void setTitle(String title) { this.title = title; }
