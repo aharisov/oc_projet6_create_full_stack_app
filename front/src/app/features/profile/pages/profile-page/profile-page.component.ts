@@ -2,21 +2,25 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 
+import { Topic } from 'src/app/interfaces/topic.interface';
 import { UpdateUserRequest } from 'src/app/interfaces/update-user-request.interface';
 import { UserProfile } from 'src/app/interfaces/user-profile.interface';
 import { ProfileFormComponent } from '../../components/profile-form/profile-form.component';
+import { ProfileSubscriptionsComponent } from '../../components/profile-subscriptions/profile-subscriptions.component';
 import { ProfileService } from '../../services/profile.service';
+import { TopicsService } from 'src/app/features/topics/services/topics.service';
 
 @Component({
   selector: 'app-profile-page',
   standalone: true,
-  imports: [ProfileFormComponent],
+  imports: [ProfileFormComponent, ProfileSubscriptionsComponent],
   templateUrl: './profile-page.component.html',
   styleUrl: './profile-page.component.css'
 })
 export class ProfilePageComponent implements OnInit {
   private readonly formBuilder = inject(FormBuilder);
   private readonly profileService = inject(ProfileService);
+  private readonly topicsService = inject(TopicsService);
   private readonly passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/;
 
   private profile: UserProfile | null = null;
@@ -27,6 +31,11 @@ export class ProfilePageComponent implements OnInit {
   isSubmitting = false;
   submitError: string | null = null;
   submitSuccess: string | null = null;
+  subscriptions: Topic[] = [];
+  isSubscriptionsLoading = false;
+  subscriptionsLoadError: string | null = null;
+  subscriptionsActionError: string | null = null;
+  pendingUnsubscribeTopicIds = new Set<number>();
 
   profileForm = this.formBuilder.nonNullable.group({
     username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(30)]],
@@ -36,6 +45,7 @@ export class ProfilePageComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadProfile();
+    this.loadSubscriptions();
   }
 
   onSubmit(): void {
@@ -82,6 +92,22 @@ export class ProfilePageComponent implements OnInit {
     });
   }
 
+  onUnsubscribeRequested(topicId: number): void {
+    this.subscriptionsActionError = null;
+    this.updatePendingUnsubscribeTopicIds(topicId, true);
+
+    this.topicsService.unsubscribe(topicId).subscribe({
+      next: () => {
+        this.subscriptions = this.subscriptions.filter((topic) => topic.id !== topicId);
+        this.updatePendingUnsubscribeTopicIds(topicId, false);
+      },
+      error: (error: HttpErrorResponse) => {
+        this.subscriptionsActionError = this.extractApiError(error, 'Impossible de se désabonner pour le moment.');
+        this.updatePendingUnsubscribeTopicIds(topicId, false);
+      }
+    });
+  }
+
   private loadProfile(): void {
     this.isLoading = true;
     this.loadError = null;
@@ -102,5 +128,37 @@ export class ProfilePageComponent implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+
+  private loadSubscriptions(): void {
+    this.isSubscriptionsLoading = true;
+    this.subscriptionsLoadError = null;
+
+    this.topicsService.getSubscribedTopics().subscribe({
+      next: (topics) => {
+        this.subscriptions = topics;
+        this.isSubscriptionsLoading = false;
+      },
+      error: (error: HttpErrorResponse) => {
+        this.subscriptionsLoadError = this.extractApiError(error, 'Impossible de charger les abonnements.');
+        this.isSubscriptionsLoading = false;
+      }
+    });
+  }
+
+  private updatePendingUnsubscribeTopicIds(topicId: number, isPending: boolean): void {
+    const nextPendingTopicIds = new Set(this.pendingUnsubscribeTopicIds);
+
+    if (isPending) {
+      nextPendingTopicIds.add(topicId);
+    } else {
+      nextPendingTopicIds.delete(topicId);
+    }
+
+    this.pendingUnsubscribeTopicIds = nextPendingTopicIds;
+  }
+
+  private extractApiError(error: HttpErrorResponse, fallback: string): string {
+    return error.error?.message || fallback;
   }
 }

@@ -1,0 +1,9 @@
+<section class="subscriptions-grid">
+  @for (topic of topics; track topic.id) {
+    <app-profile-subscription-item
+      [topic]="topic"
+      [isPending]="pendingTopicIds.has(topic.id)"
+      (unsubscribeRequested)="onUnsubscribeRequested($event)"
+    />
+  }
+</section>

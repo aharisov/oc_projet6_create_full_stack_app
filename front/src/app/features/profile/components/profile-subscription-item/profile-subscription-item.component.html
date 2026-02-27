@@ -1,0 +1,9 @@
+<article class="subscription-card">
+  <div class="subscription-content">
+    <h3>{{ topic.name }}</h3>
+    <p>Description: {{ topic.description || 'Aucune description disponible.' }}</p>
+  </div>
+  <button class="btn btn-violet" type="button" [disabled]="isPending" (click)="onUnsubscribe()">
+    {{ isPending ? 'Désabonnement...' : 'Se désabonner' }}
+  </button>
+</article>

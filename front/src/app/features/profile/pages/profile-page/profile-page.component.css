@@ -2,6 +2,10 @@
   display: block;
 }
 
+.profile-wrap .cont {
+  padding-bottom: 50px;
+}
+
 .status-info,
 .status-error {
   text-align: center;
@@ -10,4 +14,22 @@
 
 .status-error {
   color: #a40f0f;
+}
+
+.subscriptions-section {
+  margin-top: 48px;
+  padding-top: 38px;
+  border-top: 1px solid #000;
+}
+
+.subscriptions-section h2 {
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.subscriptions-section .status-info,
+.subscriptions-section .status-error {
+  margin-top: 16px;
 }
