@@ -1,0 +1,12 @@
+:host {
+  display: block;
+}
+
+.status-info,
+.status-error {
+  font-size: 16px;
+}
+
+.status-error {
+  color: #a40f0f;
+}
