@@ -7,6 +7,12 @@
   padding: 12px 22px;
   border-radius: 8px;
   background: #F5F5F5;
+  cursor: pointer;
+  transition: transform 0.2s linear;
+}
+
+.post-card:hover {
+  transform: translateY(-3px);
 }
 
 .post-card h2 {
