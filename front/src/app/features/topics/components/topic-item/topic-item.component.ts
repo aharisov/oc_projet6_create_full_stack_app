@@ -13,15 +13,9 @@ export class TopicItemComponent {
   @Input() isSubscribed = false;
   @Input() isPending = false;
   @Output() subscribeRequested = new EventEmitter<number>();
-  @Output() unsubscribeRequested = new EventEmitter<number>();
 
-  onToggleSubscription(): void {
+  onSubscription(): void {
     if (this.isPending) {
-      return;
-    }
-
-    if (this.isSubscribed) {
-      this.unsubscribeRequested.emit(this.topic.id);
       return;
     }
 

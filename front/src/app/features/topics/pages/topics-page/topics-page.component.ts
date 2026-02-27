@@ -44,23 +44,6 @@ export class TopicsPageComponent implements OnInit {
     });
   }
 
-  onUnsubscribeRequested(topicId: number): void {
-    this.actionError = null;
-    this.updatePendingTopicIds(topicId, true);
-    this.topicsService.unsubscribe(topicId).subscribe({
-      next: () => {
-        const nextSubscribedTopicIds = new Set(this.subscribedTopicIds);
-        nextSubscribedTopicIds.delete(topicId);
-        this.subscribedTopicIds = nextSubscribedTopicIds;
-        this.updatePendingTopicIds(topicId, false);
-      },
-      error: (error: HttpErrorResponse) => {
-        this.actionError = this.extractApiError(error, 'Impossible de se desabonner pour le moment.');
-        this.updatePendingTopicIds(topicId, false);
-      }
-    });
-  }
-
   private loadTopics(): void {
     this.isLoading = true;
     this.loadError = null;

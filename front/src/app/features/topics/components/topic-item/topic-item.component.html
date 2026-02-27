@@ -7,11 +7,11 @@
     class="btn"
     [class.btn-violet]="!isSubscribed"
     [class.btn-subscribed]="isSubscribed"
-    [disabled]="isPending"
-    (click)="onToggleSubscription()"
+    [disabled]="isSubscribed || isPending"
+    (click)="onSubscription()"
   >
     @if (isPending) {
-      {{ isSubscribed ? 'Desabonnement...' : 'Abonnement...' }}
+      {{ 'Abonnement...' }}
     } @else {
       {{ isSubscribed ? 'Déjà abonné' : "S'abonner" }}
     }
