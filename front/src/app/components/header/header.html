@@ -7,7 +7,7 @@
           <button class="btn-logout" type="button" [disabled]="isLoggingOut" (click)="onLogout()">
             {{ isLoggingOut ? 'Déconnexion...' : 'Se déconnecter' }}
           </button>
-          <a [routerLink]="['/posts']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMobileMenu()">Articles</a>
+          <a [routerLink]="['/posts']" routerLinkActive="active" (click)="closeMobileMenu()">Articles</a>
           <a [routerLink]="['/topics']" routerLinkActive="active" (click)="closeMobileMenu()">Thèmes</a>
         </span>
         <span class="nav-right">
