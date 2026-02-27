@@ -15,6 +15,9 @@ public class CommentDto {
 	@Schema(accessMode = Schema.AccessMode.READ_ONLY, description = "Comment author identifier", example = "1")
 	private Long authorId;
 
+	@Schema(accessMode = Schema.AccessMode.READ_ONLY, description = "Comment author username", example = "johndoe")
+	private String authorName;
+
 	@NotBlank(message = "Comment content is required")
 	@Schema(description = "Comment content", example = "Très bon article.")
 	private String content;
@@ -38,6 +41,9 @@ public class CommentDto {
 
 	public Long getAuthorId() { return authorId; }
 	public void setAuthorId(Long authorId) { this.authorId = authorId; }
+
+	public String getAuthorName() { return authorName; }
+	public void setAuthorName(String authorName) { this.authorName = authorName; }
 
 	public String getContent() { return content; }
 	public void setContent(String content) { this.content = content; }
