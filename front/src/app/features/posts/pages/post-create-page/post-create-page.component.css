@@ -1,0 +1,103 @@
+:host {
+  display: block;
+}
+
+.post-create-form-wrap {
+  max-width: 280px;
+  margin: 0 auto;
+}
+
+.post-create-form-wrap .form-title {
+  margin-bottom: 40px;
+  text-align: center;
+}
+.post-create-form-wrap .form-title h1 {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.post-create-form-wrap .form-row {
+  margin-bottom: 18px;
+}
+
+.post-create-form-wrap .form-row input,
+.post-create-form-wrap .form-row select,
+.post-create-form-wrap .form-row textarea {
+  width: 100%;
+  border: 2px solid #7763c5;
+  border-radius: 8px;
+  font-size: 20px;
+}
+
+.post-create-form-wrap .form-row input,
+.post-create-form-wrap .form-row select {
+  height: 48px;
+  padding: 0 18px;
+}
+
+.post-create-form-wrap .form-row textarea {
+  min-height: 212px;
+  padding: 12px;
+  resize: none;
+}
+
+.post-create-form-wrap .form-row input::placeholder,
+.post-create-form-wrap .form-row textarea::placeholder {
+  color: #939393;
+}
+
+.post-create-form-wrap .form-row input.ng-invalid.ng-touched,
+.post-create-form-wrap .form-row select.ng-invalid.ng-touched,
+.post-create-form-wrap .form-row textarea.ng-invalid.ng-touched {
+  border-color: #a40f0f;
+}
+
+.post-create-form-wrap .form-error {
+  margin: 8px 0 0 6px;
+  font-size: 14px;
+  color: #a40f0f;
+}
+
+.post-create-form-wrap .submit-error {
+  margin-bottom: 20px;
+}
+
+.post-create-form-wrap .form-success {
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: rgb(62, 183, 62);
+}
+
+.post-create-form-wrap button[type='submit'] {
+  display: block;
+  min-width: 140px;
+  margin: 40px auto 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.status-info,
+.status-error {
+  text-align: center;
+  font-size: 16px;
+}
+
+.status-error {
+  color: #a40f0f;
+}
+
+@media (max-width: 479px) {
+  app-btn-return {
+    position: absolute;
+    top: 90px;
+    left: 0;
+  }
+
+  .post-create-form-wrap {
+    max-width: 100%;
+    margin-top: 100px;
+  }
+  .post-create-form-wrap .form-title {
+    text-align: left;
+  }
+}

@@ -1,0 +1,74 @@
+<app-btn-return [link]="['/posts']"></app-btn-return>
+
+<div class="post-create-wrap">
+  <div class="cont">
+    <div class="post-create-form-wrap">
+      <div class="form-title">
+        <h1>Créer un nouvel article</h1>
+      </div>
+
+      @if (isTopicsLoading) {
+        <p class="status-info">Chargement des thèmes...</p>
+      } @else if (topicsLoadError) {
+        <p class="status-error">{{ topicsLoadError }}</p>
+      } @else {
+        <form [formGroup]="postForm" (ngSubmit)="onSubmit()" novalidate>
+          <div class="form-row">
+            <select id="topicId" formControlName="topicId">
+              <option [ngValue]="null">Sélectionner un thème</option>
+              @for (topic of topics; track topic.id) {
+                <option [ngValue]="topic.id">{{ topic.name }}</option>
+              }
+            </select>
+            <div class="form-error">
+              @if ((postForm.controls.topicId.touched || submitted) && postForm.controls.topicId.errors?.['required']) {
+                <span>Le thème est requis.</span>
+              }
+            </div>
+          </div>
+
+          <div class="form-row">
+            <input id="title" type="text" formControlName="title" placeholder="Titre de l'article">
+            <div class="form-error">
+              @if ((postForm.controls.title.touched || submitted) && postForm.controls.title.errors?.['required']) {
+                <span>Le titre est requis.</span>
+              }
+              @if ((postForm.controls.title.touched || submitted) && postForm.controls.title.errors?.['maxlength']) {
+                <span>Le titre ne peut pas dépasser 200 caractères.</span>
+              }
+            </div>
+          </div>
+
+          <div class="form-row">
+            <textarea
+              id="content"
+              formControlName="content"
+              rows="8"
+              placeholder="Contenu de l'article"
+            ></textarea>
+            <div class="form-error">
+              @if ((postForm.controls.content.touched || submitted) && postForm.controls.content.errors?.['required']) {
+                <span>Le contenu est requis.</span>
+              }
+            </div>
+          </div>
+
+          @if (submitError) {
+            <div class="form-error submit-error">
+              <span>{{ submitError }}</span>
+            </div>
+          }
+          @if (submitSuccess) {
+            <div class="form-success">
+              <span>{{ submitSuccess }}</span>
+            </div>
+          }
+
+          <button class="btn btn-violet" type="submit" [disabled]="isSubmitting">
+            {{ isSubmitting ? 'Création...' : 'Créer' }}
+          </button>
+        </form>
+      }
+    </div>
+  </div>
+</div>
