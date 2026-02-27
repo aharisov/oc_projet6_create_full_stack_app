@@ -3,7 +3,7 @@
     top: 216px;
     z-index: 999;
     left: 10px;
-    width: 100%;
+    width: calc(100% - 10px);
 }
 .btn-return {
     width: 40px;
