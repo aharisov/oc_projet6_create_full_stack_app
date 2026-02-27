@@ -30,6 +30,8 @@
 }
 
 .post-card p {
+  height: 80px;
+  overflow-y: hidden;
   margin-bottom: 10px;
   font-size: 14px;
   line-height: 1.4;
@@ -39,5 +41,10 @@
   .post-card {
     min-height: unset;
     padding: 18px 14px;
+  }
+
+  .post-card p {
+    height: auto;
+    overflow-y: unset;
   }
 }
