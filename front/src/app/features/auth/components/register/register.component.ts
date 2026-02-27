@@ -2,7 +2,8 @@ import { Component, OnDestroy, inject } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { BtnReturn } from 'src/app/components/btn-return/btn-return';
+import { Subscription } from 'rxjs';
+import { BtnReturn } from 'src/app/components/btn-return/btn-return.component';
 import { AuthService } from 'src/app/features/auth/services/auth.service';
 import { RegisterRequest } from 'src/app/interfaces/register-request.interface';
 
@@ -18,6 +19,7 @@ export class RegisterComponent implements OnDestroy {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private redirectTimeoutId: ReturnType<typeof setTimeout> | null = null;
+  private readonly subscriptions = new Subscription();
   private readonly passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/;
 
   submitted = false;
@@ -48,31 +50,35 @@ export class RegisterComponent implements OnDestroy {
     };
 
     this.isSubmitting = true;
-    this.authService.register(payload).subscribe({
-      next: (response) => {
-        this.submitSuccess = response.message || 'Inscription reussie.';
-        this.registerForm.reset({
-          username: '',
-          email: '',
-          password: ''
-        });
-        this.submitted = false;
-        this.isSubmitting = false;
-        if (this.redirectTimeoutId) {
-          clearTimeout(this.redirectTimeoutId);
+    this.subscriptions.add(
+      this.authService.register(payload).subscribe({
+        next: (response) => {
+          this.submitSuccess = response.message || 'Inscription reussie.';
+          this.registerForm.reset({
+            username: '',
+            email: '',
+            password: ''
+          });
+          this.submitted = false;
+          this.isSubmitting = false;
+          if (this.redirectTimeoutId) {
+            clearTimeout(this.redirectTimeoutId);
+          }
+          this.redirectTimeoutId = setTimeout(() => {
+            void this.router.navigate(['/login']);
+          }, 2000);
+        },
+        error: (error: HttpErrorResponse) => {
+          this.submitError = error.error?.message || "Erreur pendant l'inscription.";
+          this.isSubmitting = false;
         }
-        this.redirectTimeoutId = setTimeout(() => {
-          void this.router.navigate(['/login']);
-        }, 2000);
-      },
-      error: (error: HttpErrorResponse) => {
-        this.submitError = error.error?.message || "Erreur pendant l'inscription.";
-        this.isSubmitting = false;
-      }
-    });
+      })
+    );
   }
 
   ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+
     if (this.redirectTimeoutId) {
       clearTimeout(this.redirectTimeoutId);
       this.redirectTimeoutId = null;

@@ -1,10 +1,11 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnDestroy, inject } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/features/auth/services/auth.service';
 import { LoginRequest } from 'src/app/interfaces/login-request.interface';
-import { BtnReturn } from 'src/app/components/btn-return/btn-return';
+import { BtnReturn } from 'src/app/components/btn-return/btn-return.component';
 
 @Component({
   selector: 'app-login',
@@ -13,10 +14,11 @@ import { BtnReturn } from 'src/app/components/btn-return/btn-return';
   imports: [ReactiveFormsModule, BtnReturn],
   standalone: true
 })
-export class LoginComponent {
+export class LoginComponent implements OnDestroy {
   private readonly formBuilder = inject(FormBuilder);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly subscriptions = new Subscription();
 
   submitted = false;
   isSubmitting = false;
@@ -42,15 +44,21 @@ export class LoginComponent {
     };
 
     this.isSubmitting = true;
-    this.authService.login(payload).subscribe({
-      next: () => {
-        this.isSubmitting = false;
-        void this.router.navigate(['/posts']);
-      },
-      error: (error: HttpErrorResponse) => {
-        this.submitError = error.error?.message || 'Erreur pendant la connexion.';
-        this.isSubmitting = false;
-      }
-    });
+    this.subscriptions.add(
+      this.authService.login(payload).subscribe({
+        next: () => {
+          this.isSubmitting = false;
+          void this.router.navigate(['/posts']);
+        },
+        error: (error: HttpErrorResponse) => {
+          this.submitError = error.error?.message || 'Erreur pendant la connexion.';
+          this.isSubmitting = false;
+        }
+      })
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }
