@@ -1,44 +1,45 @@
 :host {
+  display: block;
+}
+.home-wrap.guest {
+  min-height: calc(100vh - 92px);
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100vh;
-}
-.home-wrap {
   position: relative;
   top: -100px;
 }
 
-.home-wrap .home-logo,
-.home-wrap .home-buttons {
+.home-wrap.guest .home-logo,
+.home-wrap.guest .home-buttons {
   text-align: center;
 }
 
-.home-wrap .home-logo {
+.home-wrap.guest .home-logo {
   width: 100%;
   margin-bottom: 44px;
 }
 
-.home-wrap .home-logo img {
+.home-wrap.guest .home-logo img {
   width: 100%;
   max-width: 412px;
 }
 
-.home-wrap .home-buttons {
+.home-wrap.guest .home-buttons {
   gap: 65px;
 }
 
-.home-wrap .home-buttons .btn {
+.home-wrap.guest .home-buttons .btn {
   width: 100%;
   max-width: 377px;
 }
 
 @media (max-width: 479px) {
-  .home-wrap .home-logo {
+  .home-wrap.guest .home-logo {
     margin-bottom: 40px;
   }
 
-  .home-wrap .home-buttons {
+  .home-wrap.guest .home-buttons {
     flex-direction: column;
     gap: 40px;
   }

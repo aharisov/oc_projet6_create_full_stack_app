@@ -1,21 +1,11 @@
-@if (isAuthenticated$ | async) {
-  <div class="home-wrap">
-    <div class="cont">
-      <div class="articles-feed">
-        <p>feed is coming</p>
-      </div>
+<div class="home-wrap guest">
+  <div class="cont">
+    <div class="home-logo flex-center">
+      <img src="/assets/logo.svg" alt="MDD">
+    </div>
+    <div class="home-buttons flex-center">
+      <button [routerLink]="['/login']" class="btn btn-white" type="button">Se connecter</button>
+      <button [routerLink]="['/register']" class="btn btn-white" type="button">S'inscrire</button>
     </div>
   </div>
-} @else {
-  <div class="home-wrap">
-    <div class="cont">
-      <div class="home-logo flex-center">
-        <img src="/assets/logo.svg" alt="MDD">
-      </div>
-      <div class="home-buttons flex-center">
-        <button [routerLink]="['/login']" class="btn btn-white" type="button">Se connecter</button>
-        <button [routerLink]="['/register']" class="btn btn-white" type="button">S'inscrire</button>
-      </div>
-    </div>
-  </div>
-}
+</div>
