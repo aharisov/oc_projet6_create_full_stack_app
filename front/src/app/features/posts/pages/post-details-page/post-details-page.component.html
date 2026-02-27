@@ -1,8 +1,6 @@
 <div class="post-details-page">
   <app-btn-return [link]="['/posts']"></app-btn-return>
   <div class="cont">
-    
-
     @if (isLoading) {
       <p class="status-info">Chargement de l'article...</p>
     } @else if (loadError) {
@@ -19,6 +17,29 @@
 
         <div class="post-content">{{ post.content }}</div>
       </article>
+
+      <hr>
+
+      <section class="comments-section">
+        <h2>Commentaires</h2>
+
+        @if (areCommentsLoading) {
+          <p class="status-info">Chargement des commentaires...</p>
+        } @else if (commentsError) {
+          <p class="status-error">{{ commentsError }}</p>
+        } @else if (comments.length === 0) {
+          <p class="status-info">Aucun commentaire pour le moment.</p>
+        } @else {
+          <app-comments-list [comments]="comments" />
+        }
+
+        <app-comment-form
+          [commentForm]="commentForm"
+          [isSubmitting]="isSubmittingComment"
+          [submitError]="commentSubmitError"
+          (formSubmitted)="onSubmitComment()"
+        />
+      </section>
     }
   </div>
 </div>
