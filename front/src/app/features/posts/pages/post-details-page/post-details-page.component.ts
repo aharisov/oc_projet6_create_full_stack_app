@@ -5,10 +5,10 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 
 import { BtnReturn } from 'src/app/components/btn-return/btn-return';
-import { CommentFormComponent } from 'src/app/components/comment-form/comment-form.component';
-import { CommentsListComponent } from 'src/app/components/comments-list/comments-list.component';
 import { Comment } from 'src/app/interfaces/comment.interface';
 import { Post } from 'src/app/interfaces/post.interface';
+import { CommentFormComponent } from '../../components/comment-form/comment-form.component';
+import { CommentsListComponent } from '../../components/comments-list/comments-list.component';
 import { CommentsService } from '../../services/comments.service';
 import { PostsService } from '../../services/posts.service';
 
