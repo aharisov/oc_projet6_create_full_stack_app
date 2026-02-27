@@ -1,6 +1,7 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, HostListener, inject } from '@angular/core';
+import { Component, HostListener, OnDestroy, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 import { AuthService } from 'src/app/features/auth/services/auth.service';
 
@@ -8,12 +9,13 @@ import { AuthService } from 'src/app/features/auth/services/auth.service';
   selector: 'app-header',
   standalone: true,
   imports: [RouterLink, RouterLinkActive, AsyncPipe],
-  templateUrl: './header.html',
-  styleUrl: './header.css'
+  templateUrl: './header.component.html',
+  styleUrl: './header.component.css'
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnDestroy {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly subscriptions = new Subscription();
   readonly isAuthenticated$ = this.authService.isAuthenticated$;
   isMobileMenuOpen = false;
   isLoggingOut = false;
@@ -59,20 +61,26 @@ export class HeaderComponent {
     }
 
     this.isLoggingOut = true;
-    this.authService.logout().subscribe({
-      next: () => {
-        this.finishLogout();
-      },
-      error: () => {
-        this.authService.clearAuthSession();
-        this.finishLogout();
-      }
-    });
+    this.subscriptions.add(
+      this.authService.logout().subscribe({
+        next: () => {
+          this.finishLogout();
+        },
+        error: () => {
+          this.authService.clearAuthSession();
+          this.finishLogout();
+        }
+      })
+    );
   }
 
   private finishLogout(): void {
     this.isLoggingOut = false;
     this.closeMobileMenu();
     void this.router.navigate(['/']);
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }
