@@ -1,0 +1,10 @@
+<section class="topics-grid">
+  @for (topic of topics; track topic.id) {
+    <app-topic-item
+      [topic]="topic"
+      [isSubscribed]="subscribedTopicIds.has(topic.id)"
+      [isPending]="pendingTopicIds.has(topic.id)"
+      (subscribeRequested)="onSubscribeRequested($event)"
+    />
+  }
+</section>
