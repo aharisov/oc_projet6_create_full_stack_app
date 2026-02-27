@@ -1,13 +1,13 @@
 @if (isAuthenticated$ | async) {
   <header class="auth">
     <div class="cont">
-      <div class="logo" [routerLink]="['/']"><img src="/assets/logo.svg" alt="MDD"></div>
+      <div class="logo" [routerLink]="['/posts']"><img src="/assets/logo.svg" alt="MDD"></div>
       <nav class="user-menu" [class.active]="isMobileMenuOpen">
         <span class="nav-left">
           <button class="btn-logout" type="button" [disabled]="isLoggingOut" (click)="onLogout()">
             {{ isLoggingOut ? 'Déconnexion...' : 'Se déconnecter' }}
           </button>
-          <a [routerLink]="['/']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMobileMenu()">Articles</a>
+          <a [routerLink]="['/posts']" routerLinkActive="active" (click)="closeMobileMenu()">Articles</a>
           <a [routerLink]="['/topics']" routerLinkActive="active" (click)="closeMobileMenu()">Thèmes</a>
         </span>
         <span class="nav-right">

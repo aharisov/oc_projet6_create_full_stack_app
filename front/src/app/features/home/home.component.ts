@@ -1,5 +1,4 @@
-import { Component, inject } from '@angular/core';
-import { AuthService } from 'src/app/features/auth/services/auth.service';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-home',
@@ -8,6 +7,4 @@ import { AuthService } from 'src/app/features/auth/services/auth.service';
   standalone: false
 })
 export class HomeComponent {
-  private readonly authService = inject(AuthService);
-  readonly isAuthenticated$ = this.authService.isAuthenticated$;
 }

@@ -9,11 +9,11 @@ export const guestOnlyGuard: CanActivateFn = () => {
   const router = inject(Router);
 
   if (authService.isAuthenticated()) {
-    return router.createUrlTree(['/']);
+    return router.createUrlTree(['/posts']);
   }
 
   // If a refresh cookie exists, rebuild in-memory session and redirect guests-only routes.
   return authService.tryRestoreSession().pipe(
-    map((restored) => (restored ? router.createUrlTree(['/']) : true))
+    map((restored) => (restored ? router.createUrlTree(['/posts']) : true))
   );
 };

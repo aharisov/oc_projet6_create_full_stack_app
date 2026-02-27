@@ -1,0 +1,19 @@
+<div class="posts-page">
+  <div class="cont">
+    <div class="posts-actions">
+      <button class="btn-sort" type="button" [disabled]="isLoading" (click)="onToggleSort()">
+        Trier par <span class="sort-arrow {{ sortOrder === 'desc' ? 'down' : 'up' }}"></span>
+      </button>
+    </div>
+
+    @if (isLoading) {
+      <p class="status-info">Chargement des articles...</p>
+    } @else if (loadError) {
+      <p class="status-error">{{ loadError }}</p>
+    } @else if (posts.length === 0) {
+      <p class="status-info">Aucun article disponible.</p>
+    } @else {
+      <app-post-list [posts]="posts" />
+    }
+  </div>
+</div>

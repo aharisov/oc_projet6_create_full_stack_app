@@ -1,0 +1,24 @@
+<div class="post-details-page">
+  <app-btn-return [link]="['/posts']"></app-btn-return>
+  <div class="cont">
+    
+
+    @if (isLoading) {
+      <p class="status-info">Chargement de l'article...</p>
+    } @else if (loadError) {
+      <p class="status-error">{{ loadError }}</p>
+    } @else if (post) {
+      <article class="post-details-card">
+        <h1>{{ post.title }}</h1>
+
+        <div class="post-meta">
+          <span>{{ post.createdAt | date: 'dd/MM/yyyy' }}</span>
+          <span>{{ post.authorName }}</span>
+          <span>{{ post.topicName }}</span>
+        </div>
+
+        <div class="post-content">{{ post.content }}</div>
+      </article>
+    }
+  </div>
+</div>

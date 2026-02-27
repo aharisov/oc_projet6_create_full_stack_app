@@ -45,7 +45,7 @@ export class LoginComponent {
     this.authService.login(payload).subscribe({
       next: () => {
         this.isSubmitting = false;
-        void this.router.navigate(['/']);
+        void this.router.navigate(['/posts']);
       },
       error: (error: HttpErrorResponse) => {
         this.submitError = error.error?.message || 'Erreur pendant la connexion.';

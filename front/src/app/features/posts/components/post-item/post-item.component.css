@@ -1,0 +1,43 @@
+.post-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 6px;
+  min-height: 161px;
+  padding: 12px 22px;
+  border-radius: 8px;
+  background: #F5F5F5;
+  cursor: pointer;
+  transition: transform 0.2s linear;
+}
+
+.post-card:hover {
+  transform: translateY(-3px);
+}
+
+.post-card h2 {
+  margin-bottom: 15px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.post-card .post-meta {
+  display: flex;
+  align-items: center;
+  gap: 50px;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+.post-card p {
+  margin-bottom: 10px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+@media (max-width: 639px) {
+  .post-card {
+    min-height: unset;
+    padding: 18px 14px;
+  }
+}

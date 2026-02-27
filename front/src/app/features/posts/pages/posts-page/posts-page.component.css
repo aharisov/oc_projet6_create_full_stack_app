@@ -1,0 +1,60 @@
+:host {
+  display: block;
+}
+
+.posts-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.btn-sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-sort:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.sort-arrow {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background: url('/assets/ic_arrow.svg') center / contain no-repeat;
+  transition: transform 0.2s linear;
+}
+
+.sort-arrow.down {
+  transform: rotate(-90deg);
+}
+
+.sort-arrow.up {
+  transform: rotate(90deg);
+}
+
+.status-info,
+.status-error {
+  font-size: 16px;
+}
+
+.status-error {
+  color: #a40f0f;
+}
+
+@media (max-width: 639px) {
+  .posts-actions {
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+}
