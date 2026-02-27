@@ -12,7 +12,10 @@
       }
       <app-topic-list
         [topics]="topics"
+        [subscribedTopicIds]="subscribedTopicIds"
         [pendingTopicIds]="pendingTopicIds"
+        (subscribeRequested)="onSubscribeRequested($event)"
+        (unsubscribeRequested)="onUnsubscribeRequested($event)"
       />
     }
   </div>

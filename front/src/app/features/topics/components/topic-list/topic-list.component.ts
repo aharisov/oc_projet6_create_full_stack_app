@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { Topic } from 'src/app/interfaces/topic.interface';
 import { TopicItemComponent } from '../topic-item/topic-item.component';
@@ -12,5 +12,16 @@ import { TopicItemComponent } from '../topic-item/topic-item.component';
 })
 export class TopicListComponent {
   @Input({ required: true }) topics: Topic[] = [];
+  @Input() subscribedTopicIds: ReadonlySet<number> = new Set<number>();
   @Input() pendingTopicIds: ReadonlySet<number> = new Set<number>();
+  @Output() subscribeRequested = new EventEmitter<number>();
+  @Output() unsubscribeRequested = new EventEmitter<number>();
+
+  onSubscribeRequested(topicId: number): void {
+    this.subscribeRequested.emit(topicId);
+  }
+
+  onUnsubscribeRequested(topicId: number): void {
+    this.unsubscribeRequested.emit(topicId);
+  }
 }

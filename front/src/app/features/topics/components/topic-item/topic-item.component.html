@@ -3,5 +3,17 @@
     <h2>{{ topic.name }}</h2>
     <p>{{ topic.description || 'Aucune description disponible.' }}</p>
   </div>
-  <button class="btn btn-violet" type="button">S'abonner</button>
+  <button 
+    class="btn"
+    [class.btn-violet]="!isSubscribed"
+    [class.btn-subscribed]="isSubscribed"
+    [disabled]="isPending"
+    (click)="onToggleSubscription()"
+  >
+    @if (isPending) {
+      {{ isSubscribed ? 'Desabonnement...' : 'Abonnement...' }}
+    } @else {
+      {{ isSubscribed ? 'Déjà abonné' : "S'abonner" }}
+    }
+  </button>
 </article>

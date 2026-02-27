@@ -29,6 +29,7 @@
 @media (max-width: 639px) {
   .topic-card {
     min-height: unset;
+    padding: 18px 14px;
   }
 }
 
