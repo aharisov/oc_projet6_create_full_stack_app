@@ -1,0 +1,18 @@
+<div class="profile-wrap">
+  <div class="cont">
+    @if (isLoading) {
+      <p class="status-info">Chargement du profil...</p>
+    } @else if (loadError) {
+      <p class="status-error">{{ loadError }}</p>
+    } @else {
+      <app-profile-form
+        [profileForm]="profileForm"
+        [submitted]="submitted"
+        [isSubmitting]="isSubmitting"
+        [submitError]="submitError"
+        [submitSuccess]="submitSuccess"
+        (formSubmitted)="onSubmit()"
+      />
+    }
+  </div>
+</div>
