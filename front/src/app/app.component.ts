@@ -1,7 +1,8 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { Subscription } from 'rxjs';
 
-import { HeaderComponent } from './components/header/header';
+import { HeaderComponent } from './components/header/header.component';
 import { AuthService } from './features/auth/services/auth.service';
 
 @Component({
@@ -11,10 +12,15 @@ import { AuthService } from './features/auth/services/auth.service';
     standalone: true,
     imports: [HeaderComponent, RouterOutlet]
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
   private readonly authService = inject(AuthService);
+  private readonly subscriptions = new Subscription();
 
   ngOnInit(): void {
-    this.authService.tryRestoreSession().subscribe();
+    this.subscriptions.add(this.authService.tryRestoreSession().subscribe());
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }
