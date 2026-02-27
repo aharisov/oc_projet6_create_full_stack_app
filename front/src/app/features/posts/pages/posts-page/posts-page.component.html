@@ -1,6 +1,7 @@
 <div class="posts-page">
   <div class="cont">
     <div class="posts-actions">
+      <button [routerLink]="['/posts/create']" class="btn btn-violet btn-create" type="button">Créer un article</button>
       <button class="btn-sort" type="button" [disabled]="isLoading" (click)="onToggleSort()">
         Trier par <span class="sort-arrow {{ sortOrder === 'desc' ? 'down' : 'up' }}"></span>
       </button>
