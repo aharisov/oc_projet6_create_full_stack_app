@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -12,7 +12,9 @@ export class PostsService {
   private readonly http = inject(HttpClient);
   private readonly postsUrl = `${environment.apiBaseUrl}/posts`;
 
-  getFeed(): Observable<Post[]> {
-    return this.http.get<Post[]>(this.postsUrl);
+  getFeed(sortOrder: 'asc' | 'desc' = 'desc'): Observable<Post[]> {
+    const params = new HttpParams().set('sort', sortOrder);
+
+    return this.http.get<Post[]>(this.postsUrl, { params });
   }
 }

@@ -1,5 +1,11 @@
 <div class="posts-page">
   <div class="cont">
+    <div class="posts-actions">
+      <button class="btn-sort" type="button" [disabled]="isLoading" (click)="onToggleSort()">
+        Trier par <span class="sort-arrow {{ sortOrder === 'desc' ? 'down' : 'up' }}"></span>
+      </button>
+    </div>
+
     @if (isLoading) {
       <p class="status-info">Chargement des articles...</p>
     } @else if (loadError) {

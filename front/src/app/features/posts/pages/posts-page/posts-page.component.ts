@@ -16,6 +16,7 @@ export class PostsPageComponent implements OnInit {
   private readonly postsService = inject(PostsService);
 
   posts: Post[] = [];
+  sortOrder: 'asc' | 'desc' = 'desc';
   isLoading = false;
   loadError: string | null = null;
 
@@ -23,11 +24,16 @@ export class PostsPageComponent implements OnInit {
     this.loadPosts();
   }
 
+  onToggleSort(): void {
+    this.sortOrder = this.sortOrder === 'desc' ? 'asc' : 'desc';
+    this.loadPosts();
+  }
+
   private loadPosts(): void {
     this.isLoading = true;
     this.loadError = null;
 
-    this.postsService.getFeed().subscribe({
+    this.postsService.getFeed(this.sortOrder).subscribe({
       next: (posts) => {
         this.posts = posts;
         this.isLoading = false;
