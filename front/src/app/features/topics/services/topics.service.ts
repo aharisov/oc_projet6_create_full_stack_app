@@ -26,4 +26,8 @@ export class TopicsService {
     return this.http.post<MessageResponse>(`${this.topicsUrl}/${topicId}/subscribe`, {});
   }
 
+  unsubscribe(topicId: number): Observable<MessageResponse> {
+    return this.http.delete<MessageResponse>(`${this.topicsUrl}/${topicId}/unsubscribe`);
+  }
+
 }

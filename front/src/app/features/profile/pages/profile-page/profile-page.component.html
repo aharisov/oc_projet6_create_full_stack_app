@@ -1,0 +1,40 @@
+<div class="profile-wrap">
+  <div class="cont">
+    @if (isLoading) {
+      <p class="status-info">Chargement du profil...</p>
+    } @else if (loadError) {
+      <p class="status-error">{{ loadError }}</p>
+    } @else {
+      <app-profile-form
+        [profileForm]="profileForm"
+        [submitted]="submitted"
+        [isSubmitting]="isSubmitting"
+        [submitError]="submitError"
+        [submitSuccess]="submitSuccess"
+        (formSubmitted)="onSubmit()"
+      />
+
+      <section class="subscriptions-section">
+        <h2>Abonnements</h2>
+
+        @if (isSubscriptionsLoading) {
+          <p class="status-info">Chargement des abonnements...</p>
+        } @else if (subscriptionsLoadError) {
+          <p class="status-error">{{ subscriptionsLoadError }}</p>
+        } @else if (subscriptions.length === 0) {
+          <p class="status-info">Aucun abonnement.</p>
+        } @else {
+          @if (subscriptionsActionError) {
+            <p class="status-error">{{ subscriptionsActionError }}</p>
+          }
+
+          <app-profile-subscriptions
+            [topics]="subscriptions"
+            [pendingTopicIds]="pendingUnsubscribeTopicIds"
+            (unsubscribeRequested)="onUnsubscribeRequested($event)"
+          />
+        }
+      </section>
+    }
+  </div>
+</div>
