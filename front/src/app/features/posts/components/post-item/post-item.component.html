@@ -4,5 +4,5 @@
     <span>{{ post.createdAt | date: 'dd/MM/yyyy' }}</span>
     <span>{{ post.authorName }}</span>
   </div>
-  <p>{{ post.content }}</p>
+  <p>{{ post.content.length > 200 ? (post.content | slice:0:200) + '...' : post.content }}</p>
 </article>

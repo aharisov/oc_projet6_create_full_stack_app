@@ -1,5 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
 import { Post } from 'src/app/interfaces/post.interface';
 import { PostsService } from '../../services/posts.service';
@@ -8,7 +9,7 @@ import { PostListComponent } from '../../components/post-list/post-list.componen
 @Component({
   selector: 'app-posts-page',
   standalone: true,
-  imports: [PostListComponent],
+  imports: [PostListComponent, RouterLink],
   templateUrl: './posts-page.component.html',
   styleUrl: './posts-page.component.css'
 })
