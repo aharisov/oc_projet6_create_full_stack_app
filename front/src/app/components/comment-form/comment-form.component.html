@@ -1,0 +1,25 @@
+<div class="comment-form-wrap">
+  @if (commentForm.controls.content.touched && commentForm.controls.content.errors?.['required']) {
+    <p class="status-error">Le commentaire est requis.</p>
+  }
+  @if (commentForm.controls.content.touched && commentForm.controls.content.errors?.['maxlength']) {
+    <p class="status-error">Le commentaire ne peut pas dépasser 2000 caractères.</p>
+  }
+  @if (submitError) {
+    <p class="status-error">{{ submitError }}</p>
+  }
+
+  <form class="comment-form" [formGroup]="commentForm" (ngSubmit)="onFormSubmit()">
+    <div class="comment-input-wrap">
+      <textarea
+        formControlName="content"
+        rows="4"
+        placeholder="Écrivez ici votre commentaire"
+      ></textarea>
+    </div>
+
+    <button class="btn-comment-send" type="submit" [disabled]="isSubmitting">
+      <img src="/assets/ic_comment_send.svg" alt="Envoyer">
+    </button>
+  </form>
+</div>

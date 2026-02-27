@@ -1,0 +1,38 @@
+.comments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 570px;
+  margin: 0 auto 40px;
+}
+
+.comment-row {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  align-items: start;
+  gap: 20px;
+}
+
+.comment-author {
+  font-size: 20px;
+}
+
+.comment-content {
+  padding: 20px;
+  border-radius: 12px;
+  background: #eeeeee;
+  font-size: 20px;
+  line-height: 1.5;
+  white-space: pre-line;
+}
+
+@media (max-width: 639px) {
+  .comment-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .comment-author {
+    text-align: right;
+  }
+}

@@ -1,0 +1,8 @@
+<div class="comments-list">
+  @for (comment of comments; track comment.id) {
+    <article class="comment-row">
+      <span class="comment-author">{{ comment.authorName || ('#' + comment.authorId) }}</span>
+      <p class="comment-content">{{ comment.content }}</p>
+    </article>
+  }
+</div>
