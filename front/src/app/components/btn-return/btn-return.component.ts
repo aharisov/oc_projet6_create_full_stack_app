@@ -5,8 +5,8 @@ import { RouterLink } from '@angular/router';
   selector: 'app-btn-return',
   standalone: true,
   imports: [RouterLink],
-  templateUrl: './btn-return.html',
-  styleUrl: './btn-return.css',
+  templateUrl: './btn-return.component.html',
+  styleUrl: './btn-return.component.css',
 })
 export class BtnReturn {
   @Input() link: string[] = ['/'];

@@ -1,8 +1,9 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Subscription } from 'rxjs';
 
-import { BtnReturn } from 'src/app/components/btn-return/btn-return';
+import { BtnReturn } from 'src/app/components/btn-return/btn-return.component';
 import { Topic } from 'src/app/interfaces/topic.interface';
 import { TopicsService } from 'src/app/features/topics/services/topics.service';
 import { PostsService } from '../../services/posts.service';
@@ -15,10 +16,11 @@ import { CreatePostRequest } from 'src/app/interfaces/create-post-request.interf
   templateUrl: './post-create-page.component.html',
   styleUrl: './post-create-page.component.css'
 })
-export class PostCreatePageComponent implements OnInit {
+export class PostCreatePageComponent implements OnInit, OnDestroy {
   private readonly formBuilder = inject(FormBuilder);
   private readonly topicsService = inject(TopicsService);
   private readonly postsService = inject(PostsService);
+  private readonly subscriptions = new Subscription();
 
   topics: Topic[] = [];
   isTopicsLoading = false;
@@ -61,37 +63,45 @@ export class PostCreatePageComponent implements OnInit {
     };
 
     this.isSubmitting = true;
-    this.postsService.createPost(payload).subscribe({
-      next: (response) => {
-        this.submitSuccess = response.message || 'Article créé avec succès.';
-        this.postForm.reset({
-          topicId: null,
-          title: '',
-          content: ''
-        });
-        this.submitted = false;
-        this.isSubmitting = false;
-      },
-      error: (error: HttpErrorResponse) => {
-        this.submitError = error.error?.message || 'Erreur pendant la creation de l\'article.';
-        this.isSubmitting = false;
-      }
-    });
+    this.subscriptions.add(
+      this.postsService.createPost(payload).subscribe({
+        next: (response) => {
+          this.submitSuccess = response.message || 'Article créé avec succès.';
+          this.postForm.reset({
+            topicId: null,
+            title: '',
+            content: ''
+          });
+          this.submitted = false;
+          this.isSubmitting = false;
+        },
+        error: (error: HttpErrorResponse) => {
+          this.submitError = error.error?.message || 'Erreur pendant la creation de l\'article.';
+          this.isSubmitting = false;
+        }
+      })
+    );
   }
 
   private loadTopics(): void {
     this.isTopicsLoading = true;
     this.topicsLoadError = null;
 
-    this.topicsService.getTopics().subscribe({
-      next: (topics) => {
-        this.topics = topics;
-        this.isTopicsLoading = false;
-      },
-      error: (error: HttpErrorResponse) => {
-        this.topicsLoadError = error.error?.message || 'Impossible de charger les themes.';
-        this.isTopicsLoading = false;
-      }
-    });
+    this.subscriptions.add(
+      this.topicsService.getTopics().subscribe({
+        next: (topics) => {
+          this.topics = topics;
+          this.isTopicsLoading = false;
+        },
+        error: (error: HttpErrorResponse) => {
+          this.topicsLoadError = error.error?.message || 'Impossible de charger les themes.';
+          this.isTopicsLoading = false;
+        }
+      })
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }

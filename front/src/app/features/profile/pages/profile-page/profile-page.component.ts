@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
+import { Subscription } from 'rxjs';
 
 import { Topic } from 'src/app/interfaces/topic.interface';
 import { UpdateUserRequest } from 'src/app/interfaces/update-user-request.interface';
@@ -17,10 +18,11 @@ import { TopicsService } from 'src/app/features/topics/services/topics.service';
   templateUrl: './profile-page.component.html',
   styleUrl: './profile-page.component.css'
 })
-export class ProfilePageComponent implements OnInit {
+export class ProfilePageComponent implements OnInit, OnDestroy {
   private readonly formBuilder = inject(FormBuilder);
   private readonly profileService = inject(ProfileService);
   private readonly topicsService = inject(TopicsService);
+  private readonly subscriptionsBag = new Subscription();
   private readonly passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/;
 
   private profile: UserProfile | null = null;
@@ -79,71 +81,79 @@ export class ProfilePageComponent implements OnInit {
     }
 
     this.isSubmitting = true;
-    this.profileService.updateProfile(payload).subscribe({
-      next: (response) => {
-        this.submitSuccess = response.message || 'Profil mis à jour.';
-        this.isSubmitting = false;
-        this.loadProfile();
-      },
-      error: (error: HttpErrorResponse) => {
-        this.submitError = error.error?.message || 'Erreur pendant la mise à jour du profil.';
-        this.isSubmitting = false;
-      }
-    });
+    this.subscriptionsBag.add(
+      this.profileService.updateProfile(payload).subscribe({
+        next: (response) => {
+          this.submitSuccess = response.message || 'Profil mis à jour.';
+          this.isSubmitting = false;
+          this.loadProfile();
+        },
+        error: (error: HttpErrorResponse) => {
+          this.submitError = error.error?.message || 'Erreur pendant la mise à jour du profil.';
+          this.isSubmitting = false;
+        }
+      })
+    );
   }
 
   onUnsubscribeRequested(topicId: number): void {
     this.subscriptionsActionError = null;
     this.updatePendingUnsubscribeTopicIds(topicId, true);
 
-    this.topicsService.unsubscribe(topicId).subscribe({
-      next: () => {
-        this.subscriptions = this.subscriptions.filter((topic) => topic.id !== topicId);
-        this.updatePendingUnsubscribeTopicIds(topicId, false);
-      },
-      error: (error: HttpErrorResponse) => {
-        this.subscriptionsActionError = this.extractApiError(error, 'Impossible de se désabonner pour le moment.');
-        this.updatePendingUnsubscribeTopicIds(topicId, false);
-      }
-    });
+    this.subscriptionsBag.add(
+      this.topicsService.unsubscribe(topicId).subscribe({
+        next: () => {
+          this.subscriptions = this.subscriptions.filter((topic) => topic.id !== topicId);
+          this.updatePendingUnsubscribeTopicIds(topicId, false);
+        },
+        error: (error: HttpErrorResponse) => {
+          this.subscriptionsActionError = this.extractApiError(error, 'Impossible de se désabonner pour le moment.');
+          this.updatePendingUnsubscribeTopicIds(topicId, false);
+        }
+      })
+    );
   }
 
   private loadProfile(): void {
     this.isLoading = true;
     this.loadError = null;
 
-    this.profileService.getProfile().subscribe({
-      next: (profile) => {
-        this.profile = profile;
-        this.profileForm.reset({
-          username: profile.username,
-          email: profile.email,
-          password: ''
-        });
-        this.submitted = false;
-        this.isLoading = false;
-      },
-      error: (error: HttpErrorResponse) => {
-        this.loadError = error.error?.message || 'Impossible de charger votre profil.';
-        this.isLoading = false;
-      }
-    });
+    this.subscriptionsBag.add(
+      this.profileService.getProfile().subscribe({
+        next: (profile) => {
+          this.profile = profile;
+          this.profileForm.reset({
+            username: profile.username,
+            email: profile.email,
+            password: ''
+          });
+          this.submitted = false;
+          this.isLoading = false;
+        },
+        error: (error: HttpErrorResponse) => {
+          this.loadError = error.error?.message || 'Impossible de charger votre profil.';
+          this.isLoading = false;
+        }
+      })
+    );
   }
 
   private loadSubscriptions(): void {
     this.isSubscriptionsLoading = true;
     this.subscriptionsLoadError = null;
 
-    this.topicsService.getSubscribedTopics().subscribe({
-      next: (topics) => {
-        this.subscriptions = topics;
-        this.isSubscriptionsLoading = false;
-      },
-      error: (error: HttpErrorResponse) => {
-        this.subscriptionsLoadError = this.extractApiError(error, 'Impossible de charger les abonnements.');
-        this.isSubscriptionsLoading = false;
-      }
-    });
+    this.subscriptionsBag.add(
+      this.topicsService.getSubscribedTopics().subscribe({
+        next: (topics) => {
+          this.subscriptions = topics;
+          this.isSubscriptionsLoading = false;
+        },
+        error: (error: HttpErrorResponse) => {
+          this.subscriptionsLoadError = this.extractApiError(error, 'Impossible de charger les abonnements.');
+          this.isSubscriptionsLoading = false;
+        }
+      })
+    );
   }
 
   private updatePendingUnsubscribeTopicIds(topicId: number, isPending: boolean): void {
@@ -160,5 +170,9 @@ export class ProfilePageComponent implements OnInit {
 
   private extractApiError(error: HttpErrorResponse, fallback: string): string {
     return error.error?.message || fallback;
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptionsBag.unsubscribe();
   }
 }
