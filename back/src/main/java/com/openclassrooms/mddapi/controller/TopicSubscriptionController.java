@@ -64,7 +64,7 @@ public class TopicSubscriptionController {
 	public ResponseEntity<MessageResponse> subscribe(@PathVariable Long id) {
 		subscriptionService.subscribe(id);
 		
-		return ResponseEntity.ok(new MessageResponse("Subscribed successfully!"));
+		return ResponseEntity.ok(new MessageResponse("Abonnement effectué avec succès."));
 	}
 
 	@DeleteMapping("/{id}/unsubscribe")
@@ -81,6 +81,6 @@ public class TopicSubscriptionController {
 	public ResponseEntity<MessageResponse> unsubscribe(@PathVariable Long id) {
 		subscriptionService.unsubscribe(id);
 
-		return ResponseEntity.ok(new MessageResponse("Unsubscribed successfully!"));
+		return ResponseEntity.ok(new MessageResponse("Désabonnement effectué avec succès."));
 	}
 }

@@ -8,12 +8,12 @@ public class TopicDto {
 	@Schema(accessMode = Schema.AccessMode.READ_ONLY, description = "Topic identifier", example = "4")
 	private Long id;
 
-	@NotBlank(message = "Topic name is required")
-	@Size(max = 200, message = "Max topic name length is 200 characters.")
+	@NotBlank(message = "Le nom du thème est requis.")
+	@Size(max = 200, message = "Le nom du thème ne peut pas dépasser 200 caractères.")
 	@Schema(description = "Topic name", example = "Java")
 	private String name;
 
-	@Size(max = 2000, message = "Max description length is 2000 characters.")
+	@Size(max = 2000, message = "La description ne peut pas dépasser 2000 caractères.")
 	@Schema(description = "Topic description", example = "Everything about Java development")
 	private String description;
 

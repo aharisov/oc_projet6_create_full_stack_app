@@ -63,22 +63,22 @@ public class AuthService implements IAuthService {
 		String username = request.getUsername() != null ? request.getUsername().trim() : null;
 
 		if (email == null || email.isBlank()) {
-			throw new BadRequestException("Email is required");
+			throw new BadRequestException("L'email est requis.");
 		}
 		if (username == null || username.isBlank()) {
-			throw new BadRequestException("Username is required");
+			throw new BadRequestException("Le nom d'utilisateur est requis.");
 		}
 		if (request.getPassword() == null || request.getPassword().isBlank()) {
-			throw new BadRequestException("Password is required");
+			throw new BadRequestException("Le mot de passe est requis.");
 		}
 
 		if (userRepository.existsByEmail(email)) {
 			log.warn("Registration blocked: email already in use");
-			throw new ConflictException("Email already in use");
+			throw new ConflictException("Cet email est déjà utilisé.");
 		}
 		if (userRepository.existsByUsername(username)) {
 			log.warn("Registration blocked: username already in use");
-			throw new ConflictException("Username already in use");
+			throw new ConflictException("Ce nom d'utilisateur est déjà utilisé.");
 		}
 
 		String encodedPassword = passwordEncoder.encode(request.getPassword());
@@ -108,16 +108,16 @@ public class AuthService implements IAuthService {
 		String password = request.getPassword();
 
 		if (identifier == null || identifier.isBlank()) {
-			throw new BadRequestException("Identifier is required");
+			throw new BadRequestException("L'identifiant est requis.");
 		}
 		if (password == null || password.isBlank()) {
-			throw new BadRequestException("Password is required");
+			throw new BadRequestException("Le mot de passe est requis.");
 		}
 
 		User user = resolveUser(identifier);
 		if (!passwordEncoder.matches(password, user.getPasswordHash())) {
 			log.warn("Login failed: invalid credentials");
-			throw new UnauthorizedException("Invalid credentials");
+			throw new UnauthorizedException("Identifiants invalides.");
 		}
 
 		String accessToken = jwtService.generateAccessToken(user);
@@ -143,31 +143,31 @@ public class AuthService implements IAuthService {
 	@Override
 	public AuthTokens refresh(String refreshToken) {
 		if (refreshToken == null || refreshToken.isBlank()) {
-			throw new BadRequestException("Refresh token is required");
+			throw new BadRequestException("Le jeton de rafraîchissement est requis.");
 		}
 		if (!jwtService.isTokenValid(refreshToken)) {
 			log.warn("Refresh failed: token invalid");
-			throw new UnauthorizedException("Invalid refresh token");
+			throw new UnauthorizedException("Jeton de rafraîchissement invalide.");
 		}
 		String tokenType = jwtService.getTokenType(refreshToken);
 		if (!"refresh".equals(tokenType)) {
 			log.warn("Refresh failed: wrong token type");
-			throw new UnauthorizedException("Invalid refresh token");
+			throw new UnauthorizedException("Jeton de rafraîchissement invalide.");
 		}
 		String subject = jwtService.getSubject(refreshToken);
 		Long userId = Long.valueOf(subject);
 
 		RefreshToken storedRefreshToken = refreshTokenRepository.findByUserId(userId)
-			.orElseThrow(() -> new UnauthorizedException("Invalid refresh token"));
+			.orElseThrow(() -> new UnauthorizedException("Jeton de rafraîchissement invalide."));
 		
 		if (storedRefreshToken.getExpiresAt().isBefore(Instant.now())) {
 			log.warn("Refresh failed: token expired");
-			throw new UnauthorizedException("Invalid refresh token");
+			throw new UnauthorizedException("Jeton de rafraîchissement invalide.");
 		}
 		
 		if (!hashToken(refreshToken).equals(storedRefreshToken.getTokenHash())) {
 			log.warn("Refresh failed: token hash mismatch");
-			throw new UnauthorizedException("Invalid refresh token");
+			throw new UnauthorizedException("Jeton de rafraîchissement invalide.");
 		}
 
 		User user = storedRefreshToken.getUser();
@@ -194,16 +194,16 @@ public class AuthService implements IAuthService {
 	@Override
 	public void logout(String refreshToken) {
 		if (refreshToken == null || refreshToken.isBlank()) {
-			throw new BadRequestException("Refresh token is required");
+			throw new BadRequestException("Le jeton de rafraîchissement est requis.");
 		}
 		if (!jwtService.isTokenValid(refreshToken)) {
 			log.warn("Logout failed: token invalid");
-			throw new UnauthorizedException("Invalid refresh token");
+			throw new UnauthorizedException("Jeton de rafraîchissement invalide.");
 		}
 		String tokenType = jwtService.getTokenType(refreshToken);
 		if (!"refresh".equals(tokenType)) {
 			log.warn("Logout failed: wrong token type");
-			throw new UnauthorizedException("Invalid refresh token");
+			throw new UnauthorizedException("Jeton de rafraîchissement invalide.");
 		}
 		String subject = jwtService.getSubject(refreshToken);
 		Long userId = Long.valueOf(subject);
@@ -211,17 +211,17 @@ public class AuthService implements IAuthService {
 		RefreshToken storedRefreshToken = refreshTokenRepository.findByUserId(userId)
 			.orElseThrow(() -> {
 				log.warn("Logout failed: refresh token not found");
-				return new UnauthorizedException("Invalid refresh token");
+				return new UnauthorizedException("Jeton de rafraîchissement invalide.");
 			});
 
 		if (storedRefreshToken.getExpiresAt().isBefore(Instant.now())) {
 			log.warn("Logout failed: token expired");
-			throw new UnauthorizedException("Invalid refresh token");
+			throw new UnauthorizedException("Jeton de rafraîchissement invalide.");
 		}
 
 		if (!hashToken(refreshToken).equals(storedRefreshToken.getTokenHash())) {
 			log.warn("Logout failed: token hash mismatch");
-			throw new UnauthorizedException("Invalid refresh token");
+			throw new UnauthorizedException("Jeton de rafraîchissement invalide.");
 		}
 
 		refreshTokenRepository.delete(storedRefreshToken);
@@ -239,11 +239,11 @@ public class AuthService implements IAuthService {
 		String normalized = identifier.toLowerCase();
 		if (normalized.contains("@")) {
 			return userRepository.findByEmail(normalized)
-				.orElseThrow(() -> new UnauthorizedException("Invalid credentials"));
+				.orElseThrow(() -> new UnauthorizedException("Identifiants invalides."));
 		}
 		return userRepository.findByUsername(identifier)
 			.orElseGet(() -> userRepository.findByEmail(normalized)
-				.orElseThrow(() -> new UnauthorizedException("Invalid credentials")));
+				.orElseThrow(() -> new UnauthorizedException("Identifiants invalides.")));
 	}
 
 	/**

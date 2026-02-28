@@ -44,13 +44,13 @@ public class UserService implements IUserService {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if (auth == null || !auth.isAuthenticated()) {
 			log.warn("Unauthorized access attempt!");
-			throw new UnauthorizedException("Unauthorized");
+			throw new UnauthorizedException("Non autorisé.");
 		}
 		String email = String.valueOf(auth.getPrincipal());
 		return userRepository.findByEmail(email)
 			.orElseThrow(() -> {
 				log.warn("Unauthorized access attempt!");
-				return new UnauthorizedException("Unauthorized");
+				return new UnauthorizedException("Non autorisé.");
 			});
 	}
 
@@ -85,7 +85,7 @@ public class UserService implements IUserService {
 	@Transactional
 	public void updateUser(UpdateUserRequest request) {
 		if (request == null) {
-			throw new BadRequestException("Update payload is required");
+			throw new BadRequestException("Les données de mise à jour sont requises.");
 		}
 
 		User user = getCurrentUser();
@@ -94,7 +94,7 @@ public class UserService implements IUserService {
 		updated = updatePassword(user, request.getPassword()) || updated;
 
 		if (!updated) {
-			throw new BadRequestException("No changes detected");
+			throw new BadRequestException("Aucune modification détectée.");
 		}
 
 		userRepository.save(Objects.requireNonNull(user));
@@ -115,14 +115,14 @@ public class UserService implements IUserService {
 
 		String email = rawEmail.trim().toLowerCase();
 		if (email.isBlank()) {
-			throw new BadRequestException("Email cannot be blank");
+			throw new BadRequestException("L'email ne peut pas être vide.");
 		}
 		if (email.equals(user.getEmail())) {
 			return false;
 		}
 		if (userRepository.existsByEmailAndIdNot(email, user.getId())) {
 			log.warn("User update blocked: email already in use");
-			throw new ConflictException("Email already in use");
+			throw new ConflictException("Cet email est déjà utilisé.");
 		}
 
 		user.setEmail(email);
@@ -143,14 +143,14 @@ public class UserService implements IUserService {
 
 		String username = rawUsername.trim();
 		if (username.isBlank()) {
-			throw new BadRequestException("Username cannot be blank");
+			throw new BadRequestException("Le nom d'utilisateur ne peut pas être vide.");
 		}
 		if (username.equals(user.getUsername())) {
 			return false;
 		}
 		if (userRepository.existsByUsernameAndIdNot(username, user.getId())) {
 			log.warn("User update blocked: username already in use");
-			throw new ConflictException("Username already in use");
+			throw new ConflictException("Ce nom d'utilisateur est déjà utilisé.");
 		}
 
 		user.setUsername(username);
@@ -169,7 +169,7 @@ public class UserService implements IUserService {
 			return false;
 		}
 		if (rawPassword.isBlank()) {
-			throw new BadRequestException("Password cannot be blank");
+			throw new BadRequestException("Le mot de passe ne peut pas être vide.");
 		}
 		if (passwordEncoder.matches(rawPassword, user.getPasswordHash())) {
 			return false;

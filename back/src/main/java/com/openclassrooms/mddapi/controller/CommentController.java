@@ -85,6 +85,6 @@ public class CommentController {
 		commentService.createComment(request);
 
 		return ResponseEntity.status(201)
-			.body(new MessageResponse("Comment created successfully!"));
+			.body(new MessageResponse("Commentaire créé avec succès."));
 	}
 }

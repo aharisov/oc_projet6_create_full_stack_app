@@ -70,7 +70,7 @@ public class PostService implements IPostService {
 		Post post = postRepository.findSubscribedPostByIdAndUserId(Objects.requireNonNull(id), userId)
 			.orElseThrow(() -> {
 				log.warn("Post with id {} not found for user {}", id, userId);
-				return new NotFoundException("Post not found");
+				return new NotFoundException("Article introuvable.");
 			});
 
 		Long topicId = post.getTopic() != null ? post.getTopic().getId() : null;
@@ -95,7 +95,7 @@ public class PostService implements IPostService {
 		Topic topic = topicRepository.findById(Objects.requireNonNull(request.getTopicId()))
 			.orElseThrow(() -> {
 				log.warn("Topic with id {} not found", request.getTopicId());
-				return new NotFoundException("Topic not found");
+				return new NotFoundException("Thème introuvable.");
 			});
 
 		Post post = postMapper.toEntity(request);
@@ -117,13 +117,13 @@ public class PostService implements IPostService {
 	@Override
 	public Boolean isPostExists(Long postId) {
 		if (postId == null) {
-			throw new BadRequestException("Post id is required");
+			throw new BadRequestException("L'identifiant de l'article est requis.");
 		}
 
 		postRepository.findById(postId)
 			.orElseThrow(() -> {
 				log.warn("Post with id {} not found", postId);
-				return new NotFoundException("Post not found");
+				return new NotFoundException("Article introuvable.");
 			});
 
 		return true;

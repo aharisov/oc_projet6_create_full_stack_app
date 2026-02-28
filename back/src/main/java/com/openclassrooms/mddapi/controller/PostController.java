@@ -107,7 +107,7 @@ public class PostController {
 		postService.createPost(request);
 
 		return ResponseEntity.status(201)
-			.body((new MessageResponse("Post created successfully!")));
+			.body((new MessageResponse("Article créé avec succès.")));
 	}
 
 }

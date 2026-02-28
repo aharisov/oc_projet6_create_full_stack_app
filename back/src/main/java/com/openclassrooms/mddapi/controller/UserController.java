@@ -68,6 +68,6 @@ public class UserController {
 	public ResponseEntity<MessageResponse> updateUser(@Valid @RequestBody UpdateUserRequest request) {
 		userService.updateUser(request);
 
-		return ResponseEntity.ok(new MessageResponse("User updated successfully!"));
+		return ResponseEntity.ok(new MessageResponse("Profil mis à jour avec succès."));
 	}
 }
