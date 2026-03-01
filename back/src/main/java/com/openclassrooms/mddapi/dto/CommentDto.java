@@ -18,7 +18,7 @@ public class CommentDto {
 	@Schema(accessMode = Schema.AccessMode.READ_ONLY, description = "Comment author username", example = "johndoe")
 	private String authorName;
 
-	@NotBlank(message = "Comment content is required")
+	@NotBlank(message = "Le contenu du commentaire est requis.")
 	@Schema(description = "Comment content", example = "Très bon article.")
 	private String content;
 

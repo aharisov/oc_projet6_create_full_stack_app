@@ -6,20 +6,20 @@ import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.Pattern;
 
 public class SignupRequest {
-    @NotBlank(message = "Email is required")
-    @Email(message = "Email is invalid")
-    @Size(max = 50, message = "Max email length is 50 characters.")
+    @NotBlank(message = "L'email est requis.")
+    @Email(message = "L'email est invalide.")
+    @Size(max = 50, message = "L'email ne peut pas dépasser 50 caractères.")
     private String email;
 
-    @NotBlank(message = "Username is required")
-    @Size(min = 3, max = 30, message = "Username length must be between 3 and 30 characters.")
+    @NotBlank(message = "Le nom d'utilisateur est requis.")
+    @Size(min = 3, max = 30, message = "Le nom d'utilisateur doit contenir entre 3 et 30 caractères.")
     private String username;
     
-    @NotBlank(message = "Password is required")
-    @Size(min = 8, message = "Min password length is 8 characters.")
+    @NotBlank(message = "Le mot de passe est requis.")
+    @Size(min = 8, message = "Le mot de passe doit contenir au moins 8 caractères.")
     @Pattern(
         regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).+$",
-        message = "The password must contain lowercase letters, uppercase letters, numbers, and special characters."
+        message = "Le mot de passe doit contenir une minuscule, une majuscule, un chiffre et un caractère spécial."
     )
     private String password;
 

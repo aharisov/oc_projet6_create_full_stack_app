@@ -55,19 +55,19 @@ public class TopicSubscriptionService implements ISubscriptionService {
 	@Transactional
 	public void subscribe(Long topicId) {
 		if (topicId == null) {
-			throw new BadRequestException("Topic id is required");
+			throw new BadRequestException("L'identifiant du thème est requis.");
 		}
 
 		Topic topic = topicRepository.findById(topicId)
 			.orElseThrow(() -> {
 				log.warn("Topic with id {} not found", topicId);
-				return new NotFoundException("Topic not found");
+				return new NotFoundException("Thème introuvable.");
 			});
 		User user = userService.getCurrentUser();
 
 		if (subscriptionRepository.existsByUserIdAndTopicId(user.getId(), topicId)) {
 			log.warn("Subscription already exists: userId={}, topicId={}", user.getId(), topicId);
-			throw new ConflictException("Already subscribed to this topic");
+			throw new ConflictException("Déjà abonné à ce thème.");
 		}
 
 		Subscription subscription = new Subscription();
@@ -101,18 +101,18 @@ public class TopicSubscriptionService implements ISubscriptionService {
 	@Transactional
 	public void unsubscribe(Long topicId) {
 		if (topicId == null) {
-			throw new BadRequestException("Topic id is required");
+			throw new BadRequestException("L'identifiant du thème est requis.");
 		}
 		if (!topicRepository.existsById(topicId)) {
 			log.warn("Topic with id {} not found", topicId);
-			throw new NotFoundException("Topic not found");
+			throw new NotFoundException("Thème introuvable.");
 		}
 
 		User user = userService.getCurrentUser();
 		Subscription subscription = subscriptionRepository.findByUserIdAndTopicId(user.getId(), topicId)
 			.orElseThrow(() -> {
 				log.warn("Subscription not found: userId={}, topicId={}", user.getId(), topicId);
-				return new NotFoundException("Subscription not found");
+				return new NotFoundException("Abonnement introuvable.");
 			});
 			
 		subscriptionRepository.delete(Objects.requireNonNull(subscription));

@@ -11,7 +11,7 @@ public class PostDto {
 	@Schema(accessMode = Schema.AccessMode.READ_ONLY, description = "Post identifier", example = "10")
 	private Long id;
 
-	@NotNull(message = "Topic id is required")
+	@NotNull(message = "L'identifiant du thème est requis.")
 	@Schema(description = "Topic identifier", example = "4")
 	private Long topicId;
 
@@ -24,12 +24,12 @@ public class PostDto {
 	@Schema(accessMode = Schema.AccessMode.READ_ONLY, description = "Post author username", example = "johndoe")
 	private String authorName;
 
-	@NotBlank(message = "Post title is required")
-	@Size(max = 200, message = "Max post title length is 200 characters.")
+	@NotBlank(message = "Le titre de l'article est requis.")
+	@Size(max = 200, message = "Le titre de l'article ne peut pas dépasser 200 caractères.")
 	@Schema(description = "Post title", example = "Titre de l’article")
 	private String title;
 
-	@NotBlank(message = "Post content is required")
+	@NotBlank(message = "Le contenu de l'article est requis.")
 	@Schema(description = "Post content", example = "Contenu de l’article")
 	private String content;
 

@@ -61,7 +61,7 @@ public class CommentService implements ICommentService {
 	@Override
 	public void createComment(CommentDto request) {
 		if (request == null) {
-			throw new BadRequestException("Comment payload is required");
+			throw new BadRequestException("Les données du commentaire sont requises.");
 		}
 
 		postService.isPostExists(request.getPostId());

@@ -76,7 +76,7 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<MessageResponse> handleValidation(MethodArgumentNotValidException ex) {
 		FieldError fieldError = ex.getBindingResult().getFieldError();
-		String message = fieldError != null ? fieldError.getDefaultMessage() : "Validation failed";
+		String message = fieldError != null ? fieldError.getDefaultMessage() : "Validation échouée.";
 		return ResponseEntity.badRequest().body(new MessageResponse(message));
 	}
 
@@ -89,7 +89,7 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<MessageResponse> handleGeneric(Exception ex) {
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-			.body(new MessageResponse("Unexpected error"));
+			.body(new MessageResponse("Erreur inattendue."));
 	}
 
 	/**
@@ -101,7 +101,7 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(HttpRequestMethodNotSupportedException.class)
 	public ResponseEntity<MessageResponse> handleMethodNotSupported(HttpRequestMethodNotSupportedException ex) {
 		return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
-			.body(new MessageResponse("Method not allowed"));
+			.body(new MessageResponse("Méthode non autorisée."));
 	}
 
 	/**
@@ -113,6 +113,6 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(NoHandlerFoundException.class)
 	public ResponseEntity<MessageResponse> handleNoHandlerFoundException(NoHandlerFoundException ex) {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND)
-			.body(new MessageResponse("Route not found"));
+			.body(new MessageResponse("Route introuvable."));
 	}
 }

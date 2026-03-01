@@ -80,7 +80,7 @@ public class TopicController {
 		topicService.createTopic(request);
 
 		return ResponseEntity.status(201)
-			.body(new MessageResponse("Topic created successfully!"));
+			.body(new MessageResponse("Thème créé avec succès."));
 	}
 
 	@PutMapping("/{id}")
@@ -115,7 +115,7 @@ public class TopicController {
 		topicService.updateTopic(id, request);
 		
 		return ResponseEntity.ok()
-			.body(new MessageResponse("Topic updated successfully!"));
+			.body(new MessageResponse("Thème mis à jour avec succès."));
 	}
 	
 }

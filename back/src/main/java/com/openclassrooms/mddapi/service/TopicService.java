@@ -55,7 +55,7 @@ public class TopicService implements ITopicService {
 			log.info("Topic created: id={}", newTopic.getId());
 		} catch (DataIntegrityViolationException ex) {
 			log.warn("Topic create failed: name already exists");
-			throw new ConflictException("Topic name already exists");
+			throw new ConflictException("Ce nom de thème existe déjà.");
 		}
 	}
 
@@ -72,7 +72,7 @@ public class TopicService implements ITopicService {
 		Topic topic = topicRepository.findById(Objects.requireNonNull(id))
 			.orElseThrow(() -> {
 				log.warn("Topic with id {} not found", id);
-				return new NotFoundException("Topic not found");
+				return new NotFoundException("Thème introuvable.");
 			});
 		
 		topic.setName(request.getName());
@@ -83,7 +83,7 @@ public class TopicService implements ITopicService {
 			log.info("Topic updated: id={}", updatedTopic.getId());
 		} catch (DataIntegrityViolationException ex) {
 			log.warn("Topic update failed: name already exists");
-			throw new ConflictException("Topic name already exists");
+			throw new ConflictException("Ce nom de thème existe déjà.");
 		}
 	}
 }
